@@ -1,0 +1,4028 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
+<meta name="x5-orientation" content="portrait">
+<meta name="x5-fullscreen" content="true">
+<title>DSE化學 · 元素记忆練習</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+:root{--safe-top:0px;--safe-bottom:0px;--safe-left:0px;--safe-right:0px}
+@supports(padding-top:env(safe-area-inset-top)){
+:root{--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom);--safe-left:env(safe-area-inset-left);--safe-right:env(safe-area-inset-right)}
+}
+body{background:#0f172a;color:#e2e8f0;min-height:100vh;padding:10px;padding-top:calc(10px + var(--safe-top));padding-bottom:calc(10px + var(--safe-bottom));padding-left:calc(10px + var(--safe-left));padding-right:calc(10px + var(--safe-right));-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;touch-action:manipulation}
+.container{max-width:640px;margin:0 auto}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.header-title{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:bold}
+.h-icon{width:40px;height:40px;background:#38bdf8;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#000;font-size:22px;font-weight:bold}
+.score-panel{display:flex;gap:18px;font-size:14px;text-align:center}
+.score-correct{color:#4ade80}
+.tag-desc{text-align:center;color:#38bdf8;background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.33);border-radius:999px;padding:7px 12px;margin-bottom:10px;font-size:14px}
+.question-card{background:#1e293b;border-radius:14px;border:1px solid #475569;padding:14px;min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+.question-main-text{font-size:36px;font-weight:bold}
+.slots-row{display:flex;align-items:center;gap:14px}
+.slot-group{display:flex;flex-direction:column;align-items:center;gap:4px}
+.slot-label{font-size:11px;color:#94a3b8}
+.slot{border:2px dashed #64748b;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:default;transition:.15s}
+.slot-name{width:120px;height:52px;font-size:20px}
+.slot-num{width:70px;height:52px;font-size:22px}
+.slot.filled{border-style:solid;border-color:#475569}
+.nuclide-layout{display:flex;align-items:flex-end;gap:4px}
+.nuclide-left{display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:2px}
+.slot-nuclide-num{width:44px;height:36px;font-size:16px}
+.slot-nuclide-sym{width:72px;height:72px;font-size:32px}
+.feedback-area{height:64px;padding-top:8px;pointer-events:none}
+.options-disabled{pointer-events:none!important;opacity:0.55!important;transition:opacity 0.2s}
+.feedback-card{padding:10px 14px;border-radius:10px;text-align:center;font-size:15px;opacity:0;transition:opacity .3s}
+.feedback-card.show{opacity:1;pointer-events:auto}
+.feedback-right{background:rgba(74,222,128,.12);border:1px solid #4ade80;color:#4ade80}
+.feedback-wrong{background:rgba(248,113,113,.12);border:1px solid #f87171;color:#f87171}
+.option-section-title{font-size:14px;margin:10px 0 6px;color:#94a3b8;border-bottom:1px solid #334155;padding-bottom:3px}
+.option-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.option-item{background:#1e293b;border:1px solid #475569;border-radius:10px;padding:10px 4px;text-align:center;font-size:17px;cursor:pointer;transition:.15s}
+.option-item:hover{border-color:#38bdf8;background:#273449}
+.option-item.disabled{opacity:.35;pointer-events:none}
+.btn-wrap{margin-top:12px;display:flex;justify-content:center}
+#btnCheck{padding:10px 30px;border-radius:10px;border:none;background:#38bdf8;color:#082f49;font-weight:bold;font-size:15px;cursor:pointer;-webkit-user-select:none;user-select:none;touch-action:manipulation;transition:transform .1s}
+#btnCheck:active{transform:scale(0.95)}
+#btnCheck:disabled{background:#475569;color:#94a3b8;cursor:not-allowed}
+#btnNext{padding:10px 30px;border-radius:10px;border:none;background:#22c55e;color:#052e16;font-weight:bold;font-size:15px;cursor:pointer;-webkit-user-select:none;user-select:none;touch-action:manipulation;transition:transform .1s}
+#btnNext:active{transform:scale(0.95)}
+.shell-config-box{text-align:center;padding:12px 0}
+.shell-config-symbol{font-size:26px;font-weight:bold;color:#f8fafc;margin-bottom:8px}
+.shell-config-symbol sup{font-size:0.55em;vertical-align:super;margin-left:1px;line-height:0}
+.judge-desc sup{font-size:0.75em;vertical-align:super}
+.shell-config-text{font-size:22px;color:#38bdf8;font-weight:bold;letter-spacing:3px}
+.compound-formula{font-size:30px;font-weight:bold;color:#f8fafc;text-align:center;padding:8px 0}
+.name-slots{display:flex;justify-content:center;gap:8px;margin:12px 0}
+.name-slot{min-width:55px;height:38px;border:2px dashed #475569;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:bold;color:#f8fafc;background:#0f172a}
+.name-slot.filled{border-style:solid;border-color:#38bdf8;background:#1e293b}
+.name-options{display:flex;flex-direction:column;gap:10px}
+.option-group{display:flex;flex-direction:column;gap:5px}
+.option-section-title{font-size:12px;color:#94a3b8;font-weight:bold;letter-spacing:1px}
+.option-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px}
+.option-grid-2{grid-template-columns:1fr 1fr}
+.option-item{padding:8px 4px;border:1.5px solid #475569;border-radius:8px;text-align:center;font-size:15px;font-weight:bold;color:#e2e8f0;cursor:pointer;background:#1e293b;transition:all .15s;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+.option-item:hover{border-color:#38bdf8;background:#0c4a6e}
+.option-item:active{transform:scale(0.96);background:#0c4a6e}
+.option-item.selected{border-color:#38bdf8;background:#0c4a6e;color:#38bdf8}
+.formula-options{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.formula-option{padding:12px 8px;border:1.5px solid #475569;border-radius:10px;text-align:center;font-size:18px;font-weight:bold;color:#e2e8f0;cursor:pointer;background:#1e293b;transition:all .15s;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+.formula-option:hover{border-color:#38bdf8;background:#0c4a6e}
+.formula-option:active{transform:scale(0.96);background:#0c4a6e}
+.name-quiz-container{display:flex;flex-direction:column;align-items:center;gap:0}
+.name-columns-row{display:flex;align-items:stretch;justify-content:center;gap:0;width:100%}
+.name-col{display:flex;flex-direction:column;align-items:center;flex:1;padding:0 6px}
+.name-col .name-slot{width:100%;max-width:90px}
+.connector-line{width:2px;height:12px;background:#475569;margin:0 auto}
+.name-col .opt-box{width:100%;border:1.5px solid #475569;border-radius:10px;padding:8px;background:#1e293b}
+.opt-divider{width:1px;background:#475569;align-self:stretch;margin:0 2px}
+.opt-grid-2x2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.opt-grid-link{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.opt-grid-link .option-item{text-align:center}
+/* 電子圖 */
+.judge-desc{font-size:15px;color:#cbd5e1;text-align:center;line-height:1.5}
+.ed-wrap{display:inline-flex;align-items:center;position:relative}
+.ed-bracket{width:10px;height:68px;border-top:3px solid #94a3b8;border-bottom:3px solid #94a3b8;flex-shrink:0}
+.ed-bracket-left{border-left:3px solid #94a3b8;margin-right:8px}
+.ed-bracket-right{border-right:3px solid #94a3b8;margin-left:8px;position:relative}
+.ed-content{width:68px;height:68px;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0}
+.ed-shell{position:relative;width:68px;height:68px;border:2px solid #94a3b8;border-radius:50%;display:flex;align-items:center;justify-content:center;box-sizing:border-box}
+.ed-symbol{font-size:17px;font-weight:bold;z-index:1}
+.ed-cation{font-size:18px;font-weight:bold}
+.ed-electron{position:absolute;width:7px;height:7px;background:#f8fafc;border-radius:50%;transform:translate(-50%,-50%)}
+.full-ed-wrap{position:relative;margin:0 auto}
+.full-ed-shell{position:absolute;border:1.5px solid #94a3b8;border-radius:50%;box-sizing:border-box}
+.full-ed-symbol{position:absolute;transform:translate(-50%,-50%);font-size:15px;font-weight:bold;z-index:1;color:#f8fafc}
+.full-ed-electron{position:absolute;width:6px;height:6px;background:#f8fafc;border-radius:50%;transform:translate(-50%,-50%);z-index:2}
+.ed-charge{position:absolute;top:-8px;right:-26px;font-size:17px;font-weight:bold;line-height:1;white-space:nowrap}
+.compound-diagram{display:flex;align-items:center;gap:32px}
+.compound-ion-wrap{position:relative;display:flex;align-items:center}
+.ion-count{font-size:18px;font-weight:bold;color:#f8fafc;margin-right:1px;line-height:1}
+.covalent-diagram{position:relative;width:170px;height:100px;margin:0 auto}
+.cov-atom{position:absolute;border:2px solid #94a3b8;border-radius:50%;display:flex;align-items:center;justify-content:center;transform:translate(-50%,-50%);font-size:16px;color:#f8fafc;background:rgba(15,23,42,0.3);box-sizing:border-box;z-index:1}
+.cov-electron{position:absolute;transform:translate(-50%,-50%);z-index:2}
+.cov-electron.dot{width:7px;height:7px;background:#f8fafc;border-radius:50%}
+.cov-electron.cross{color:#f8fafc;font-size:11px;line-height:1;font-weight:bold}
+.polyatomic-ion-wrap{display:inline-flex;align-items:stretch;position:relative;margin:0 6px}
+.poly-bracket{height:auto;min-height:70px;align-self:stretch}
+.poly-inner{flex-shrink:0;margin:2px 0}
+.poly-charge{font-size:16px;top:-7px;right:-22px}
+.type-display{font-size:32px;font-weight:bold;color:#f8fafc;text-align:center;padding:20px 10px;letter-spacing:2px}
+#questionBody{width:100%;display:flex;flex-direction:column;align-items:center;gap:12px}
+.judge-options{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.judge-btn{padding:10px;text-align:center;border-radius:10px;font-size:17px;font-weight:bold;cursor:pointer;transition:.15s;border:2px solid #475569;background:#1e293b;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+.judge-btn:hover{border-color:#38bdf8;background:#273449}
+.judge-btn:active{transform:scale(0.97)}
+.judge-btn.correct{color:#4ade80}
+.judge-btn.wrong{color:#f87171}
+.judge-btn.neutral{color:#f8fafc}
+/* 結算弹窗 */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:999;visibility:hidden;opacity:0;transition:.25s;padding:16px;padding-top:calc(16px + var(--safe-top));padding-bottom:calc(16px + var(--safe-bottom));-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.modal-overlay.show{visibility:visible;opacity:1}
+.modal-box{background:#1e293b;border-radius:14px;border:1px solid #38bdf8;max-width:400px;width:100%;padding:24px;text-align:center}
+.modal-box h2{margin-bottom:14px;color:#38bdf8;font-size:20px}
+.stat-row{margin:6px 0;font-size:15px}
+.progress-bar-wrap{height:8px;background:#334155;border-radius:99px;margin:12px 0 18px;overflow:hidden}
+.progress-bar-fill{height:100%;background:#4ade80;width:0;transition:width .6s}
+.modal-buttons{display:flex;gap:10px;justify-content:center}
+.modal-buttons button{padding:9px 16px;border-radius:8px;border:none;font-size:14px;cursor:pointer}
+#btnSaveScreenshot{background:#4ade80;color:#000}
+#btnContinueQuiz{background:#38bdf8;color:#000}
+@media(max-width:640px){
+body{padding:8px;padding-top:calc(8px + var(--safe-top));padding-bottom:calc(8px + var(--safe-bottom));padding-left:calc(8px + var(--safe-left));padding-right:calc(8px + var(--safe-right))}
+.header-title{font-size:15px}
+.h-icon{width:36px;height:36px;font-size:19px}
+.score-panel{gap:14px;font-size:13px}
+.tag-desc{padding:6px 10px;font-size:13px;margin-bottom:8px}
+.question-card{padding:12px;min-height:160px;gap:10px}
+.question-main-text{font-size:28px}
+.slots-row{gap:10px}
+.slot-name{width:100px;height:44px;font-size:17px}
+.slot-num{width:58px;height:44px;font-size:18px}
+.slot-nuclide-num{width:38px;height:30px;font-size:14px}
+.slot-nuclide-sym{width:60px;height:60px;font-size:26px}
+.slot-label{font-size:10px}
+.feedback-area{height:52px}
+.feedback-card{padding:8px 12px;font-size:13px}
+.option-section-title{font-size:13px;margin:8px 0 5px}
+.option-grid{grid-template-columns:repeat(2,1fr);gap:6px}
+.option-item{padding:8px 4px;font-size:15px}
+.btn-wrap{margin-top:10px}
+#btnCheck{padding:9px 24px;font-size:14px}
+.modal-box{padding:20px}
+}
+@media(max-width:375px){
+.question-main-text{font-size:24px}
+.option-item{font-size:14px;padding:7px 2px}
+.judge-btn{font-size:15px;padding:9px}
+.compound-formula{font-size:26px}
+.type-display{font-size:28px}
+}
+@media(max-height:600px){
+.question-card{min-height:140px;padding:10px}
+.modal-box{padding:16px}
+.modal-box h2{margin-bottom:10px;font-size:18px}
+.stat-row{margin:4px 0;font-size:14px}
+}
+/* ===== 错题本 & 设置 ===== */
+.header-actions{display:flex;gap:8px;align-items:center}
+.header-btn{width:36px;height:36px;border-radius:10px;background:#1e293b;border:1px solid #475569;color:#38bdf8;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;-webkit-user-select:none;user-select:none}
+.header-btn:hover{background:#0c4a6e;border-color:#38bdf8}
+.header-btn:active{transform:scale(0.93)}
+.header-btn .badge{position:absolute;top:-4px;right:-4px;background:#f87171;color:#fff;font-size:10px;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px;font-weight:bold}
+.header-btn{position:relative}
+.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px;padding-top:calc(16px + env(safe-area-inset-top));padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+.panel-overlay.show{display:flex}
+.panel-box{background:#1e293b;border-radius:14px;border:1px solid #38bdf8;max-width:560px;width:100%;max-height:85vh;display:flex;flex-direction:column;overflow:hidden}
+.panel-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #334155}
+.panel-title{font-size:17px;font-weight:bold;color:#38bdf8}
+.panel-close{width:30px;height:30px;border-radius:8px;background:#334155;border:none;color:#94a3b8;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.panel-close:hover{background:#475569;color:#e2e8f0}
+.panel-body{flex:1;overflow-y:auto;padding:16px;-webkit-overflow-scrolling:touch}
+.setting-group{margin-bottom:18px}
+.setting-label{font-size:13px;color:#94a3b8;margin-bottom:6px;display:block}
+.setting-input{width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid #475569;background:#0f172a;color:#e2e8f0;font-size:14px;box-sizing:border-box}
+.setting-input:focus{outline:none;border-color:#38bdf8}
+.setting-hint{font-size:11px;color:#64748b;margin-top:4px;line-height:1.5}
+.setting-btn{padding:10px 20px;border-radius:8px;border:none;background:#38bdf8;color:#082f49;font-weight:bold;font-size:14px;cursor:pointer;width:100%;margin-top:8px}
+.setting-btn:active{transform:scale(0.98)}
+.setting-btn.secondary{background:#334155;color:#e2e8f0}
+.setting-btn.danger{background:#f87171;color:#fff}
+.sync-status{padding:10px 12px;border-radius:8px;font-size:13px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sync-status.success{background:rgba(74,222,128,.12);border:1px solid #4ade80;color:#4ade80}
+.sync-status.error{background:rgba(248,113,113,.12);border:1px solid #f87171;color:#f87171}
+.sync-status.info{background:rgba(56,189,248,.12);border:1px solid #38bdf8;color:#38bdf8}
+.wrong-item{background:#0f172a;border:1px solid #334155;border-radius:10px;padding:12px;margin-bottom:10px}
+.wrong-item-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.wrong-type{font-size:11px;color:#38bdf8;background:rgba(56,189,248,.12);padding:3px 8px;border-radius:6px}
+.wrong-time{font-size:11px;color:#64748b}
+.wrong-question{font-size:14px;color:#e2e8f0;margin-bottom:8px;line-height:1.5}
+.wrong-answer-row{display:flex;gap:12px;font-size:12px;margin-bottom:4px}
+.wrong-answer-label{color:#64748b;min-width:60px}
+.wrong-answer-user{color:#f87171}
+.wrong-answer-correct{color:#4ade80}
+.wrong-explanation{font-size:12px;color:#94a3b8;margin-top:6px;line-height:1.5;padding-top:6px;border-top:1px solid #1e293b}
+.wrong-item-actions{display:flex;gap:8px;margin-top:10px}
+.wrong-item-btn{padding:5px 12px;border-radius:6px;border:1px solid #475569;background:#1e293b;color:#94a3b8;font-size:12px;cursor:pointer}
+.wrong-item-btn:hover{border-color:#38bdf8;color:#38bdf8}
+.wrong-item-btn.danger:hover{border-color:#f87171;color:#f87171}
+.empty-state{text-align:center;padding:40px 20px;color:#64748b;font-size:14px}
+.filter-bar{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.filter-btn{padding:5px 12px;border-radius:6px;border:1px solid #475569;background:#1e293b;color:#94a3b8;font-size:12px;cursor:pointer}
+.filter-btn.active{border-color:#38bdf8;background:#0c4a6e;color:#38bdf8}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<div class="header-title"><div class="h-icon">H</div><span>DSE化學 · 微觀世界練習</span></div>
+<div class="header-actions">
+<div class="score-panel"><div class="score-correct">本輪正確<br><span id="correctCount">0</span></div><div>本輪進度<br><span id="totalCount">0</span>/30</div><div>本輪用時<br><span id="timerDisplay">00:00</span></div></div>
+<button class="header-btn" id="btnWrongBook" title="錯題本">📋<span class="badge" id="wrongBadge" style="display:none">0</span></button>
+<button class="header-btn" id="btnSettings" title="設置">⚙️</button>
+</div>
+</header>
+<div class="tag-desc" id="typeHint"></div>
+<div class="question-card"><div id="questionBody"><div style="text-align:center;color:#64748b;font-size:15px;padding:40px 10px">加載中，請稍候...</div></div></div>
+<div class="feedback-area"><div class="feedback-card" id="feedbackCard"></div></div>
+<div id="optionsArea"></div>
+<div class="btn-wrap" id="btnWrap"><button id="btnCheck" disabled>檢查答案</button><button id="btnNext" style="display:none">下一題</button></div>
+</div>
+<div class="modal-overlay" id="resultModal">
+<div class="modal-box">
+<h2>恭喜完成本輪練習！</h2>
+<div class="stat-row">答題總數：<span id="modalTotal">0</span></div>
+<div class="stat-row">答對題目：<span id="modalRight">0</span></div>
+<div class="stat-row">正確率：<span id="modalRate">0%</span></div>
+<div class="stat-row">用時：<span id="modalTime">00:00</span></div>
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="modalProgress"></div></div>
+<div class="stat-row" id="modalTip"></div>
+<div class="modal-buttons">
+<button id="btnSaveScreenshot">保存截圖</button>
+<button id="btnContinueQuiz">繼續做題</button>
+</div>
+</div>
+</div>
+<script>
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+/* ===== 全局错误捕获（必须放在最开头） ===== */
+window.onerror = function (msg, url, line, col, error) {
+  try {
+    var qb = document.getElementById("questionBody");
+    var oa = document.getElementById("optionsArea");
+    var bw = document.getElementById("btnWrap");
+    if (qb) {
+      qb.innerHTML = '<div style="text-align:center;padding:20px 10px;color:#f87171;font-size:14px;line-height:1.8">腳本運行錯誤：<br><span style="color:#94a3b8;font-size:12px">' + String(msg).replace(/</g, '&lt;') + '<br>第' + line + '行</span></div>';
+    }
+    if (oa) {
+      oa.innerHTML = '<div class="judge-btn neutral" style="max-width:200px;margin:0 auto" onclick="location.reload()">重新開始</div>';
+    }
+    if (bw) bw.style.display = "none";
+  } catch (e) {}
+  return true;
+};
+/* ===== 數据 ===== */
+var elementList = [{
+  z: 1,
+  symbol: "H",
+  name: "氫"
+}, {
+  z: 2,
+  symbol: "He",
+  name: "氦"
+}, {
+  z: 3,
+  symbol: "Li",
+  name: "鋰"
+}, {
+  z: 4,
+  symbol: "Be",
+  name: "鈹"
+}, {
+  z: 5,
+  symbol: "B",
+  name: "硼"
+}, {
+  z: 6,
+  symbol: "C",
+  name: "碳"
+}, {
+  z: 7,
+  symbol: "N",
+  name: "氮"
+}, {
+  z: 8,
+  symbol: "O",
+  name: "氧"
+}, {
+  z: 9,
+  symbol: "F",
+  name: "氟"
+}, {
+  z: 10,
+  symbol: "Ne",
+  name: "氖"
+}, {
+  z: 11,
+  symbol: "Na",
+  name: "鈉"
+}, {
+  z: 12,
+  symbol: "Mg",
+  name: "鎂"
+}, {
+  z: 13,
+  symbol: "Al",
+  name: "鋁"
+}, {
+  z: 14,
+  symbol: "Si",
+  name: "硅"
+}, {
+  z: 15,
+  symbol: "P",
+  name: "磷"
+}, {
+  z: 16,
+  symbol: "S",
+  name: "硫"
+}, {
+  z: 17,
+  symbol: "Cl",
+  name: "氯"
+}, {
+  z: 18,
+  symbol: "Ar",
+  name: "氬"
+}, {
+  z: 19,
+  symbol: "K",
+  name: "鉀"
+}, {
+  z: 20,
+  symbol: "Ca",
+  name: "鈣"
+}];
+var atomData = [{
+  symbol: "H",
+  name: "氫",
+  valence: 1
+}, {
+  symbol: "He",
+  name: "氦",
+  valence: 2
+}, {
+  symbol: "Li",
+  name: "鋰",
+  valence: 1
+}, {
+  symbol: "Be",
+  name: "鈹",
+  valence: 2
+}, {
+  symbol: "B",
+  name: "硼",
+  valence: 3
+}, {
+  symbol: "C",
+  name: "碳",
+  valence: 4
+}, {
+  symbol: "N",
+  name: "氮",
+  valence: 5
+}, {
+  symbol: "O",
+  name: "氧",
+  valence: 6
+}, {
+  symbol: "F",
+  name: "氟",
+  valence: 7
+}, {
+  symbol: "Ne",
+  name: "氖",
+  valence: 8
+}, {
+  symbol: "Na",
+  name: "鈉",
+  valence: 1
+}, {
+  symbol: "Mg",
+  name: "鎂",
+  valence: 2
+}, {
+  symbol: "Al",
+  name: "鋁",
+  valence: 3
+}, {
+  symbol: "Si",
+  name: "硅",
+  valence: 4
+}, {
+  symbol: "P",
+  name: "磷",
+  valence: 5
+}, {
+  symbol: "S",
+  name: "硫",
+  valence: 6
+}, {
+  symbol: "Cl",
+  name: "氯",
+  valence: 7
+}, {
+  symbol: "Ar",
+  name: "氬",
+  valence: 8
+}, {
+  symbol: "K",
+  name: "鉀",
+  valence: 1
+}, {
+  symbol: "Ca",
+  name: "鈣",
+  valence: 2
+}];
+var ionData = [{
+  symbol: "Na",
+  name: "鈉離子",
+  charge: "+",
+  valence: 0
+}, {
+  symbol: "Mg",
+  name: "鎂離子",
+  charge: "2+",
+  valence: 0
+}, {
+  symbol: "Al",
+  name: "鋁離子",
+  charge: "3+",
+  valence: 0
+}, {
+  symbol: "K",
+  name: "鉀離子",
+  charge: "+",
+  valence: 0
+}, {
+  symbol: "Ca",
+  name: "鈣離子",
+  charge: "2+",
+  valence: 0
+}, {
+  symbol: "F",
+  name: "氟離子",
+  charge: "-",
+  valence: 8
+}, {
+  symbol: "Cl",
+  name: "氯離子",
+  charge: "-",
+  valence: 8
+}, {
+  symbol: "O",
+  name: "氧離子",
+  charge: "2-",
+  valence: 8
+}, {
+  symbol: "S",
+  name: "硫離子",
+  charge: "2-",
+  valence: 8
+}, {
+  symbol: "N",
+  name: "氮離子",
+  charge: "3-",
+  valence: 8
+}, {
+  symbol: "Li",
+  name: "鋰離子",
+  charge: "+",
+  valence: 0
+}, {
+  symbol: "Be",
+  name: "鈹離子",
+  charge: "2+",
+  valence: 0
+}, {
+  symbol: "H",
+  name: "氫負離子",
+  charge: "-",
+  valence: 2
+}, {
+  name: "銨離子",
+  charge: "+",
+  polyatomic: true,
+  polyKey: "銨離子"
+}, {
+  name: "氫氧離子",
+  charge: "-",
+  polyatomic: true,
+  polyKey: "氫氧離子"
+}];
+var compoundData = [{
+  name: "氯化鈉",
+  ions: [{
+    symbol: "Na",
+    charge: "+",
+    valence: 0,
+    count: 1
+  }, {
+    symbol: "Cl",
+    charge: "-",
+    valence: 8,
+    count: 1
+  }]
+}, {
+  name: "氧化鎂",
+  ions: [{
+    symbol: "Mg",
+    charge: "2+",
+    valence: 0,
+    count: 1
+  }, {
+    symbol: "O",
+    charge: "2-",
+    valence: 8,
+    count: 1
+  }]
+}, {
+  name: "氧化鈣",
+  ions: [{
+    symbol: "Ca",
+    charge: "2+",
+    valence: 0,
+    count: 1
+  }, {
+    symbol: "O",
+    charge: "2-",
+    valence: 8,
+    count: 1
+  }]
+}, {
+  name: "氟化鉀",
+  ions: [{
+    symbol: "K",
+    charge: "+",
+    valence: 0,
+    count: 1
+  }, {
+    symbol: "F",
+    charge: "-",
+    valence: 8,
+    count: 1
+  }]
+}, {
+  name: "氯化鉀",
+  ions: [{
+    symbol: "K",
+    charge: "+",
+    valence: 0,
+    count: 1
+  }, {
+    symbol: "Cl",
+    charge: "-",
+    valence: 8,
+    count: 1
+  }]
+}, {
+  name: "氟化鈉",
+  ions: [{
+    symbol: "Na",
+    charge: "+",
+    valence: 0,
+    count: 1
+  }, {
+    symbol: "F",
+    charge: "-",
+    valence: 8,
+    count: 1
+  }]
+}, {
+  name: "硫化鎂",
+  ions: [{
+    symbol: "Mg",
+    charge: "2+",
+    valence: 0,
+    count: 1
+  }, {
+    symbol: "S",
+    charge: "2-",
+    valence: 8,
+    count: 1
+  }]
+}, {
+  name: "氟化鋰",
+  ions: [{
+    symbol: "Li",
+    charge: "+",
+    valence: 0,
+    count: 1
+  }, {
+    symbol: "F",
+    charge: "-",
+    valence: 8,
+    count: 1
+  }]
+}, {
+  name: "氯化鎂",
+  ions: [{
+    symbol: "Mg",
+    charge: "2+",
+    valence: 0,
+    count: 1
+  }, {
+    symbol: "Cl",
+    charge: "-",
+    valence: 8,
+    count: 2
+  }]
+}, {
+  name: "氯化鈣",
+  ions: [{
+    symbol: "Ca",
+    charge: "2+",
+    valence: 0,
+    count: 1
+  }, {
+    symbol: "Cl",
+    charge: "-",
+    valence: 8,
+    count: 2
+  }]
+}, {
+  name: "硫化鈉",
+  ions: [{
+    symbol: "Na",
+    charge: "+",
+    valence: 0,
+    count: 2
+  }, {
+    symbol: "S",
+    charge: "2-",
+    valence: 8,
+    count: 1
+  }]
+}, {
+  name: "氧化鈉",
+  ions: [{
+    symbol: "Na",
+    charge: "+",
+    valence: 0,
+    count: 2
+  }, {
+    symbol: "O",
+    charge: "2-",
+    valence: 8,
+    count: 1
+  }]
+}, {
+  name: "氟化鎂",
+  ions: [{
+    symbol: "Mg",
+    charge: "2+",
+    valence: 0,
+    count: 1
+  }, {
+    symbol: "F",
+    charge: "-",
+    valence: 8,
+    count: 2
+  }]
+}, {
+  name: "氧化鋁",
+  ions: [{
+    symbol: "Al",
+    charge: "3+",
+    valence: 0,
+    count: 2
+  }, {
+    symbol: "O",
+    charge: "2-",
+    valence: 8,
+    count: 3
+  }]
+}, {
+  name: "氮化鎂",
+  ions: [{
+    symbol: "Mg",
+    charge: "2+",
+    valence: 0,
+    count: 3
+  }, {
+    symbol: "N",
+    charge: "3-",
+    valence: 8,
+    count: 2
+  }]
+}, {
+  name: "氯化鋁",
+  ions: [{
+    symbol: "Al",
+    charge: "3+",
+    valence: 0,
+    count: 1
+  }, {
+    symbol: "Cl",
+    charge: "-",
+    valence: 8,
+    count: 3
+  }]
+}, {
+  name: "氯化銨",
+  ions: [{
+    name: "銨離子",
+    charge: "+",
+    polyatomic: true,
+    polyKey: "銨離子",
+    count: 1
+  }, {
+    symbol: "Cl",
+    charge: "-",
+    valence: 8,
+    count: 1
+  }]
+}, {
+  name: "氫氧化鈉",
+  ions: [{
+    symbol: "Na",
+    charge: "+",
+    valence: 0,
+    count: 1
+  }, {
+    name: "氫氧離子",
+    charge: "-",
+    polyatomic: true,
+    polyKey: "氫氧離子",
+    count: 1
+  }]
+}, {
+  name: "氫氧化鉀",
+  ions: [{
+    symbol: "K",
+    charge: "+",
+    valence: 0,
+    count: 1
+  }, {
+    name: "氫氧離子",
+    charge: "-",
+    polyatomic: true,
+    polyKey: "氫氧離子",
+    count: 1
+  }]
+}, {
+  name: "氫氧化鈣",
+  ions: [{
+    symbol: "Ca",
+    charge: "2+",
+    valence: 0,
+    count: 1
+  }, {
+    name: "氫氧離子",
+    charge: "-",
+    polyatomic: true,
+    polyKey: "氫氧離子",
+    count: 2
+  }]
+}];
+/* ============================================================
+   ★ GitHub 同步配置 — 请在此处填写你的信息 ★
+   ============================================================
+   1. username: 你的 GitHub 用户名（如 luoshu-nes）
+   2. repo:     仓库名（如 DSE-Chem-Tools）
+   3. token:    Personal Access Token
+      获取方式：GitHub → Settings → Developer settings →
+      Personal access tokens → Tokens (classic) → Generate new token
+      必须勾选 repo 权限
+   ============================================================ */
+var GITHUB_CONFIG = {
+  username: 'luoshu-nes',
+  repo: 'DSE-Chem-Tools',
+  token: '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'
+};
+
+/* 同步目标文件名（仓库根目录下） */
+var GITHUB_SYNC_FILE = 'wrong-questions.json';
+
+/* 做完一组练习后是否自动同步 */
+var AUTO_SYNC_AFTER_ROUND = true;
+
+var covalentData = [{
+  name: "水",
+  formula: "H₂O",
+  atoms: [{
+    s: "O",
+    x: 0,
+    y: 0,
+    sz: 60
+  }, {
+    s: "H",
+    x: -38,
+    y: 0,
+    sz: 36
+  }, {
+    s: "H",
+    x: 38,
+    y: 0,
+    sz: 36
+  }],
+  e: [[-26.6, -4, 0], [-26.6, 4, 1], [26.6, -4, 0], [26.6, 4, 2], [-4, -30, 0], [4, -30, 0], [-4, 30, 0], [4, 30, 0]],
+  lp: [[4, 5], [6, 7]],
+  bp: [[0, 1], [2, 3]]
+}, {
+  name: "氨",
+  formula: "NH₃",
+  atoms: [{
+    s: "N",
+    x: 0,
+    y: 0,
+    sz: 60
+  }, {
+    s: "H",
+    x: -38,
+    y: 0,
+    sz: 36
+  }, {
+    s: "H",
+    x: 38,
+    y: 0,
+    sz: 36
+  }, {
+    s: "H",
+    x: 0,
+    y: 38,
+    sz: 36
+  }],
+  e: [[-26.6, -4, 0], [-26.6, 4, 1], [26.6, -4, 0], [26.6, 4, 2], [-4, 26.6, 0], [4, 26.6, 3], [-4, -30, 0], [4, -30, 0]],
+  lp: [[6, 7]],
+  bp: [[0, 1], [2, 3], [4, 5]]
+}, {
+  name: "甲烷",
+  formula: "CH₄",
+  atoms: [{
+    s: "C",
+    x: 0,
+    y: 0,
+    sz: 60
+  }, {
+    s: "H",
+    x: 0,
+    y: -38,
+    sz: 36
+  }, {
+    s: "H",
+    x: 0,
+    y: 38,
+    sz: 36
+  }, {
+    s: "H",
+    x: -38,
+    y: 0,
+    sz: 36
+  }, {
+    s: "H",
+    x: 38,
+    y: 0,
+    sz: 36
+  }],
+  e: [[-4, -26.6, 0], [4, -26.6, 1], [-4, 26.6, 0], [4, 26.6, 2], [-26.6, -4, 0], [-26.6, 4, 3], [26.6, -4, 0], [26.6, 4, 4]],
+  lp: [],
+  bp: [[0, 1], [2, 3], [4, 5], [6, 7]]
+}, {
+  name: "二氧化碳",
+  formula: "CO₂",
+  atoms: [{
+    s: "C",
+    x: 0,
+    y: 0,
+    sz: 60
+  }, {
+    s: "O",
+    x: -44,
+    y: 0,
+    sz: 60
+  }, {
+    s: "O",
+    x: 44,
+    y: 0,
+    sz: 60
+  }],
+  e: [[-26, -6, 0], [-26, 6, 1], [-18, -6, 0], [-18, 6, 1], [18, -6, 0], [18, 6, 2], [26, -6, 0], [26, 6, 2], [-48, -30, 1], [-40, -30, 1], [-48, 30, 1], [-40, 30, 1], [40, -30, 2], [48, -30, 2], [40, 30, 2], [48, 30, 2]],
+  lp: [[8, 9], [10, 11], [12, 13], [14, 15]],
+  bp: [[0, 1], [2, 3], [4, 5], [6, 7]]
+}, {
+  name: "氯化氫",
+  formula: "HCl",
+  atoms: [{
+    s: "H",
+    x: -19,
+    y: 0,
+    sz: 36
+  }, {
+    s: "Cl",
+    x: 19,
+    y: 0,
+    sz: 60
+  }],
+  e: [[-7.6, -4, 0], [-7.6, 4, 1], [49, -4, 1], [49, 4, 1], [15, -30, 1], [23, -30, 1], [15, 30, 1], [23, 30, 1]],
+  lp: [[2, 3], [4, 5], [6, 7]],
+  bp: [[0, 1]]
+}, {
+  name: "氧氣",
+  formula: "O₂",
+  atoms: [{
+    s: "O",
+    x: -22,
+    y: 0,
+    sz: 60
+  }, {
+    s: "O",
+    x: 22,
+    y: 0,
+    sz: 60
+  }],
+  e: [[-4, -6, 0], [-4, 6, 1], [4, -6, 0], [4, 6, 1], [-26, -30, 0], [-18, -30, 0], [-26, 30, 0], [-18, 30, 0], [18, -30, 1], [26, -30, 1], [18, 30, 1], [26, 30, 1]],
+  lp: [[4, 5], [6, 7], [8, 9], [10, 11]],
+  bp: [[0, 1], [2, 3]]
+}, {
+  name: "氮氣",
+  formula: "N₂",
+  atoms: [{
+    s: "N",
+    x: -19,
+    y: 0,
+    sz: 60
+  }, {
+    s: "N",
+    x: 19,
+    y: 0,
+    sz: 60
+  }],
+  e: [[-8, -6, 0], [-8, 6, 1], [0, -6, 0], [0, 6, 1], [8, -6, 0], [8, 6, 1], [-49, -4, 0], [-49, 4, 0], [49, -4, 1], [49, 4, 1]],
+  lp: [[6, 7], [8, 9]],
+  bp: [[0, 1], [2, 3], [4, 5]]
+}, {
+  name: "氫氣",
+  formula: "H₂",
+  atoms: [{
+    s: "H",
+    x: -13,
+    y: 0,
+    sz: 36
+  }, {
+    s: "H",
+    x: 13,
+    y: 0,
+    sz: 36
+  }],
+  e: [[0, -4, 0], [0, 4, 1]],
+  lp: [],
+  bp: [[0, 1]]
+}];
+var polyatomicIonData = {
+  "銨離子": {
+    atoms: [{
+      s: "N",
+      x: 0,
+      y: 0,
+      sz: 52
+    }, {
+      s: "H",
+      x: 0,
+      y: -33,
+      sz: 30
+    }, {
+      s: "H",
+      x: 0,
+      y: 33,
+      sz: 30
+    }, {
+      s: "H",
+      x: -33,
+      y: 0,
+      sz: 30
+    }, {
+      s: "H",
+      x: 33,
+      y: 0,
+      sz: 30
+    }],
+    e: [[-3.5, -23, 0], [3.5, -23, 1], [-3.5, 23, 0], [3.5, 23, 2], [-23, -3.5, 0], [-23, 3.5, 3], [23, -3.5, 0], [23, 3.5, 0]],
+    charge: "+"
+  },
+  "氫氧離子": {
+    atoms: [{
+      s: "H",
+      x: -16,
+      y: 0,
+      sz: 30
+    }, {
+      s: "O",
+      x: 16,
+      y: 0,
+      sz: 52
+    }],
+    e: [[-6.4, -3.5, 0], [-6.4, 3.5, 1], [42, -3.5, 1], [42, 3.5, 1], [13, -26, 1], [20, -26, 1], [13, 26, 1], [20, 26, 1]],
+    charge: "-"
+  }
+};
+var typeCompoundData = [{
+  name: "氯化鈉",
+  formula: "NaCl",
+  type: "ionic"
+}, {
+  name: "氧化鎂",
+  formula: "MgO",
+  type: "ionic"
+}, {
+  name: "氧化鈣",
+  formula: "CaO",
+  type: "ionic"
+}, {
+  name: "氟化鉀",
+  formula: "KF",
+  type: "ionic"
+}, {
+  name: "氯化鉀",
+  formula: "KCl",
+  type: "ionic"
+}, {
+  name: "氟化鈉",
+  formula: "NaF",
+  type: "ionic"
+}, {
+  name: "硫化鎂",
+  formula: "MgS",
+  type: "ionic"
+}, {
+  name: "氟化鋰",
+  formula: "LiF",
+  type: "ionic"
+}, {
+  name: "氯化鎂",
+  formula: "MgCl₂",
+  type: "ionic"
+}, {
+  name: "氯化鈣",
+  formula: "CaCl₂",
+  type: "ionic"
+}, {
+  name: "硫化鈉",
+  formula: "Na₂S",
+  type: "ionic"
+}, {
+  name: "氧化鈉",
+  formula: "Na₂O",
+  type: "ionic"
+}, {
+  name: "氟化鎂",
+  formula: "MgF₂",
+  type: "ionic"
+}, {
+  name: "氧化鋁",
+  formula: "Al₂O₃",
+  type: "ionic"
+}, {
+  name: "氮化鎂",
+  formula: "Mg₃N₂",
+  type: "ionic"
+}, {
+  name: "氯化銨",
+  formula: "NH₄Cl",
+  type: "ionic"
+}, {
+  name: "氫氧化鈉",
+  formula: "NaOH",
+  type: "ionic"
+}, {
+  name: "氫氧化鉀",
+  formula: "KOH",
+  type: "ionic"
+}, {
+  name: "氫氧化鈣",
+  formula: "Ca(OH)₂",
+  type: "ionic"
+}, {
+  name: "硝酸鉀",
+  formula: "KNO₃",
+  type: "ionic"
+}, {
+  name: "碳酸鈣",
+  formula: "CaCO₃",
+  type: "ionic"
+}, {
+  name: "硫酸鈉",
+  formula: "Na₂SO₄",
+  type: "ionic"
+}, {
+  name: "水",
+  formula: "H₂O",
+  type: "covalent"
+}, {
+  name: "氨",
+  formula: "NH₃",
+  type: "covalent"
+}, {
+  name: "甲烷",
+  formula: "CH₄",
+  type: "covalent"
+}, {
+  name: "二氧化碳",
+  formula: "CO₂",
+  type: "covalent"
+}, {
+  name: "氯化氫",
+  formula: "HCl",
+  type: "covalent"
+}, {
+  name: "氧氣",
+  formula: "O₂",
+  type: "covalent"
+}, {
+  name: "氮氣",
+  formula: "N₂",
+  type: "covalent"
+}, {
+  name: "氫氣",
+  formula: "H₂",
+  type: "covalent"
+}, {
+  name: "一氧化碳",
+  formula: "CO",
+  type: "covalent"
+}, {
+  name: "四氯化碳",
+  formula: "CCl₄",
+  type: "covalent"
+}, {
+  name: "二氧化硫",
+  formula: "SO₂",
+  type: "covalent"
+}, {
+  name: "二氧化氮",
+  formula: "NO₂",
+  type: "covalent"
+}, {
+  name: "五氧化二磷",
+  formula: "P₂O₅",
+  type: "covalent"
+}, {
+  name: "二氧化硅",
+  formula: "SiO₂",
+  type: "covalent"
+}, {
+  name: "過氧化氫",
+  formula: "H₂O₂",
+  type: "covalent"
+}, {
+  name: "硫化氫",
+  formula: "H₂S",
+  type: "covalent"
+}, {
+  name: "氟化氫",
+  formula: "HF",
+  type: "covalent"
+}, {
+  name: "乙醇",
+  formula: "C₂H₅OH",
+  type: "covalent"
+}, {
+  name: "葡萄糖",
+  formula: "C₆H₁₂O₆",
+  type: "covalent"
+}];
+
+/* ===== 状态 ===== */
+var state = {
+  total: 0,
+  correct: 0,
+  sessionTotal: 0,
+  sessionCorrect: 0,
+  currentQuestion: null,
+  questionType: null,
+  slots: [],
+  answerFilled: {},
+  questionSet: [],
+  questionIndex: 0
+};
+var dom = {
+  questionBody: document.getElementById("questionBody"),
+  optionsArea: document.getElementById("optionsArea"),
+  feedbackCard: document.getElementById("feedbackCard"),
+  btnCheck: document.getElementById("btnCheck"),
+  btnNext: document.getElementById("btnNext"),
+  btnWrap: document.getElementById("btnWrap"),
+  correctCount: document.getElementById("correctCount"),
+  totalCount: document.getElementById("totalCount"),
+  timerDisplay: document.getElementById("timerDisplay"),
+  typeHint: document.getElementById("typeHint"),
+  resultModal: document.getElementById("resultModal"),
+  modalTotal: document.getElementById("modalTotal"),
+  modalRight: document.getElementById("modalRight"),
+  modalRate: document.getElementById("modalRate"),
+  modalTime: document.getElementById("modalTime"),
+  modalProgress: document.getElementById("modalProgress"),
+  modalTip: document.getElementById("modalTip"),
+  btnSaveScreenshot: document.getElementById("btnSaveScreenshot"),
+  btnContinueQuiz: document.getElementById("btnContinueQuiz")
+};
+
+/* ===== 工具函數 ===== */
+function shuffle(a) {
+  var t = _toConsumableArray(a);
+  for (var i = t.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var _ref = [t[j], t[i]];
+    t[i] = _ref[0];
+    t[j] = _ref[1];
+  }
+  return t;
+}
+function getDistractors(c, key, n) {
+  return shuffle(elementList.filter(function (x) {
+    return x.z !== c.z;
+  })).slice(0, n).map(function (x) {
+    return x[key];
+  });
+}
+function clearFeedback() {
+  dom.feedbackCard.className = "feedback-card";
+  dom.feedbackCard.innerText = "";
+}
+function showFeedback(t, r) {
+  dom.feedbackCard.innerText = t;
+  dom.feedbackCard.className = "feedback-card show " + (r ? "feedback-right" : "feedback-wrong");
+  pauseTimer();
+}
+function updateScore() {
+  dom.correctCount.innerText = state.sessionCorrect;
+  dom.totalCount.innerText = state.sessionTotal;
+}
+function disableOptions() {
+  dom.optionsArea.classList.add("options-disabled");
+}
+function enableOptions() {
+  dom.optionsArea.classList.remove("options-disabled");
+}
+var sessionStartTime = 0,
+  timerInterval = null,
+  pausedElapsed = 0;
+function formatTime(ms) {
+  var s = Math.floor(ms / 1000);
+  return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+}
+function updateTimerDisplay() {
+  dom.timerDisplay.innerText = formatTime(Date.now() - sessionStartTime);
+}
+function startTimer() {
+  stopTimer();
+  pausedElapsed = 0;
+  sessionStartTime = Date.now();
+  dom.timerDisplay.innerText = "00:00";
+  timerInterval = setInterval(updateTimerDisplay, 1000);
+}
+function pauseTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    pausedElapsed = Date.now() - sessionStartTime;
+  }
+}
+function resumeTimer() {
+  if (!timerInterval && pausedElapsed > 0) {
+    sessionStartTime = Date.now() - pausedElapsed;
+    pausedElapsed = 0;
+    timerInterval = setInterval(updateTimerDisplay, 1000);
+  }
+}
+function stopTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+}
+function getSessionTime() {
+  return timerInterval ? Date.now() - sessionStartTime : pausedElapsed;
+}
+
+/* ===== 電子圖繪製 ===== */
+function getElectronPosition(posIndex, valence, radius, center) {
+  if (radius === undefined) {
+    var size = 68;
+    center = (size - 4) / 2;
+    radius = center + 1;
+  }
+  var dir = Math.floor(posIndex / 2);
+  var second = posIndex % 2;
+  var order = [0, 4, 6, 2, 1, 5, 7, 3];
+  var hasPair = order.indexOf(dir * 2 + 1) < valence;
+  var baseAngle = [-Math.PI / 2, 0, Math.PI / 2, Math.PI][dir];
+  var offset = 8 * Math.PI / 180;
+  var angle = hasPair ? second ? baseAngle + offset : baseAngle - offset : baseAngle;
+  var x = center + radius * Math.cos(angle);
+  var y = center + radius * Math.sin(angle);
+  return {
+    left: x + 'px',
+    top: y + 'px'
+  };
+}
+function renderElectronDiagram(opts) {
+  var wrap = document.createElement("div");
+  wrap.className = "ed-wrap";
+  var isIon = opts.charge && !opts.noBracket;
+  if (isIon) {
+    var lb = document.createElement("div");
+    lb.className = "ed-bracket ed-bracket-left";
+    wrap.appendChild(lb);
+  }
+  var content = document.createElement("div");
+  content.className = "ed-content";
+  if (isIon && opts.valence === 0) {
+    var sym = document.createElement("span");
+    sym.className = "ed-symbol ed-cation";
+    sym.textContent = opts.symbol;
+    content.appendChild(sym);
+  } else {
+    var shell = document.createElement("div");
+    shell.className = "ed-shell";
+    var _sym = document.createElement("span");
+    _sym.className = "ed-symbol";
+    _sym.textContent = opts.symbol;
+    shell.appendChild(_sym);
+    var order = [0, 4, 6, 2, 1, 5, 7, 3];
+    for (var i = 0; i < opts.valence; i++) {
+      var e = document.createElement("span");
+      e.className = "ed-electron";
+      var pos = getElectronPosition(order[i], opts.valence);
+      Object.assign(e.style, pos);
+      shell.appendChild(e);
+    }
+    content.appendChild(shell);
+  }
+  wrap.appendChild(content);
+  if (isIon) {
+    var rb = document.createElement("div");
+    rb.className = "ed-bracket ed-bracket-right";
+    var ch = document.createElement("span");
+    ch.className = "ed-charge";
+    ch.textContent = opts.charge;
+    rb.appendChild(ch);
+    wrap.appendChild(rb);
+  }
+  return wrap;
+}
+function renderFullElectronDiagram(symbol, shells) {
+  var numShells = shells.length;
+  var firstR = 13,
+    layerGap = 15,
+    padding = 8;
+  var maxR = firstR + (numShells - 1) * layerGap;
+  var containerSize = (maxR + padding) * 2;
+  var cx = containerSize / 2,
+    cy = containerSize / 2;
+  var wrap = document.createElement("div");
+  wrap.className = "full-ed-wrap";
+  wrap.style.width = containerSize + "px";
+  wrap.style.height = containerSize + "px";
+  for (var i = 0; i < numShells; i++) {
+    var r = firstR + i * layerGap;
+    var shell = document.createElement("div");
+    shell.className = "full-ed-shell";
+    shell.style.width = r * 2 + "px";
+    shell.style.height = r * 2 + "px";
+    shell.style.left = cx - r + "px";
+    shell.style.top = cy - r + "px";
+    wrap.appendChild(shell);
+  }
+  var sym = document.createElement("span");
+  sym.className = "full-ed-symbol";
+  sym.textContent = symbol;
+  sym.style.left = cx + "px";
+  sym.style.top = cy + "px";
+  wrap.appendChild(sym);
+  for (var _i = 0; _i < numShells; _i++) {
+    var count = shells[_i];
+    var _r = firstR + _i * layerGap;
+    var order = [0, 4, 6, 2, 1, 5, 7, 3];
+    for (var j = 0; j < count; j++) {
+      var e = document.createElement("span");
+      e.className = "full-ed-electron";
+      var pos = getElectronPosition(order[j], count, _r, cx);
+      e.style.left = pos.left;
+      e.style.top = pos.top;
+      wrap.appendChild(e);
+    }
+  }
+  return wrap;
+}
+function renderCompoundDiagram(ions) {
+  var wrap = document.createElement("div");
+  wrap.className = "compound-diagram";
+  ions.forEach(function (ion) {
+    var ionWrap = document.createElement("div");
+    ionWrap.className = "compound-ion-wrap";
+    if (ion.count && ion.count > 1) {
+      var cnt = document.createElement("span");
+      cnt.className = "ion-count";
+      cnt.textContent = ion.count;
+      ionWrap.appendChild(cnt);
+    }
+    if (ion.polyatomic) {
+      var polyData = _objectSpread({}, polyatomicIonData[ion.polyKey]);
+      if (ion.charge) polyData.charge = ion.charge;
+      ionWrap.appendChild(renderPolyatomicIonDiagram(polyData));
+    } else {
+      ionWrap.appendChild(renderElectronDiagram(ion));
+    }
+    wrap.appendChild(ionWrap);
+  });
+  return wrap;
+}
+function renderCovalentDiagram(compound, electrons, opts) {
+  opts = opts || {};
+  var wrap = document.createElement("div");
+  wrap.className = opts.containerClass || "covalent-diagram";
+  if (opts.width) wrap.style.width = opts.width + "px";
+  if (opts.height) wrap.style.height = opts.height + "px";
+  var elecs = electrons || compound.e;
+  var ox = opts.ox !== undefined ? opts.ox : 85;
+  var oy = opts.oy !== undefined ? opts.oy : 50;
+  compound.atoms.forEach(function (a) {
+    var atom = document.createElement("div");
+    atom.className = "cov-atom";
+    atom.style.left = ox + a.x + "px";
+    atom.style.top = oy + a.y + "px";
+    atom.style.width = a.sz + "px";
+    atom.style.height = a.sz + "px";
+    atom.textContent = a.s;
+    wrap.appendChild(atom);
+  });
+  elecs.forEach(function (e) {
+    var el = document.createElement(e[2] === 0 ? "div" : "span");
+    el.className = "cov-electron " + (e[2] === 0 ? "dot" : "cross");
+    if (e[2] !== 0) el.textContent = "×";
+    el.style.left = ox + e[0] + "px";
+    el.style.top = oy + e[1] + "px";
+    wrap.appendChild(el);
+  });
+  return wrap;
+}
+function renderPolyatomicIonDiagram(ion) {
+  var wrap = document.createElement("div");
+  wrap.className = "polyatomic-ion-wrap";
+  var lb = document.createElement("div");
+  lb.className = "ed-bracket ed-bracket-left poly-bracket";
+  wrap.appendChild(lb);
+  var innerW = ion.innerW || 100,
+    innerH = ion.innerH || 80;
+  var inner = renderCovalentDiagram(ion, ion.e, {
+    containerClass: "covalent-diagram poly-inner",
+    width: innerW,
+    height: innerH,
+    ox: innerW / 2,
+    oy: innerH / 2
+  });
+  wrap.appendChild(inner);
+  var rb = document.createElement("div");
+  rb.className = "ed-bracket ed-bracket-right poly-bracket";
+  var ch = document.createElement("span");
+  ch.className = "ed-charge poly-charge";
+  ch.textContent = ion.charge;
+  rb.appendChild(ch);
+  wrap.appendChild(rb);
+  return wrap;
+}
+
+/* ===== 填空題 ===== */
+function makeSlot(slotId, type, cls) {
+  var d = document.createElement("div");
+  d.className = "slot " + cls;
+  d.dataset.slotId = slotId;
+  d.dataset.slotType = type;
+  return d;
+}
+function renderFillSlots() {
+  dom.questionBody.innerHTML = "";
+  state.slots = [];
+  state.answerFilled = {};
+  var q = state.currentQuestion;
+  var qText = document.createElement("div");
+  qText.className = "question-main-text";
+  qText.innerText = state.questionType === "fill_symbol" ? q.symbol : q.name;
+  dom.questionBody.appendChild(qText);
+  if (state.questionType === "fill_symbol") {
+    dom.typeHint.innerText = "給出原子符號 → 填寫原子序與元素名稱";
+    var row = document.createElement("div");
+    row.className = "slots-row";
+    var g1 = document.createElement("div");
+    g1.className = "slot-group";
+    var l1 = document.createElement("div");
+    l1.className = "slot-label";
+    l1.innerText = "原子序";
+    var s1 = makeSlot("z", "z", "slot-num");
+    g1.appendChild(l1);
+    g1.appendChild(s1);
+    var g2 = document.createElement("div");
+    g2.className = "slot-group";
+    var l2 = document.createElement("div");
+    l2.className = "slot-label";
+    l2.innerText = "元素名稱";
+    var s2 = makeSlot("name", "name", "slot-name");
+    g2.appendChild(l2);
+    g2.appendChild(s2);
+    row.appendChild(g1);
+    row.appendChild(g2);
+    dom.questionBody.appendChild(row);
+    state.slots = [{
+      slotId: "z",
+      el: s1,
+      type: "z"
+    }, {
+      slotId: "name",
+      el: s2,
+      type: "name"
+    }];
+  } else {
+    dom.typeHint.innerText = "給出元素名稱 → 填寫原子符號與原子序";
+    var wrap = document.createElement("div");
+    wrap.className = "nuclide-layout";
+    var left = document.createElement("div");
+    left.className = "nuclide-left";
+    var sz = makeSlot("z", "z", "slot-nuclide-num");
+    left.appendChild(sz);
+    var ss = makeSlot("symbol", "symbol", "slot-nuclide-sym");
+    wrap.appendChild(left);
+    wrap.appendChild(ss);
+    dom.questionBody.appendChild(wrap);
+    state.slots = [{
+      slotId: "z",
+      el: sz,
+      type: "z"
+    }, {
+      slotId: "symbol",
+      el: ss,
+      type: "symbol"
+    }];
+  }
+}
+function renderFillOptions() {
+  dom.optionsArea.innerHTML = "";
+  dom.btnWrap.style.display = "flex";
+  var q = state.currentQuestion;
+  var t1 = document.createElement("div");
+  t1.className = "option-section-title";
+  t1.innerText = state.questionType === "fill_symbol" ? "原子序" : "原子符號";
+  dom.optionsArea.appendChild(t1);
+  var g1 = document.createElement("div");
+  g1.className = "option-grid";
+  var opts1;
+  if (state.questionType === "fill_symbol") {
+    opts1 = shuffle([q.z].concat(_toConsumableArray(getDistractors(q, "z", 3))));
+    opts1.forEach(function (v) {
+      var d = document.createElement("div");
+      d.className = "option-item";
+      d.innerText = v;
+      d.dataset.value = v;
+      d.onclick = function () {
+        return fillSlotByType("z", v);
+      };
+      g1.appendChild(d);
+    });
+  } else {
+    opts1 = shuffle([q.symbol].concat(_toConsumableArray(getDistractors(q, "symbol", 3))));
+    opts1.forEach(function (v) {
+      var d = document.createElement("div");
+      d.className = "option-item";
+      d.innerText = v;
+      d.dataset.value = v;
+      d.onclick = function () {
+        return fillSlotByType("symbol", v);
+      };
+      g1.appendChild(d);
+    });
+  }
+  dom.optionsArea.appendChild(g1);
+  var t2 = document.createElement("div");
+  t2.className = "option-section-title";
+  t2.innerText = state.questionType === "fill_symbol" ? "元素名稱" : "原子序";
+  dom.optionsArea.appendChild(t2);
+  var g2 = document.createElement("div");
+  g2.className = "option-grid";
+  if (state.questionType === "fill_symbol") {
+    var opts2 = shuffle([q.name].concat(_toConsumableArray(getDistractors(q, "name", 3))));
+    opts2.forEach(function (v) {
+      var d = document.createElement("div");
+      d.className = "option-item";
+      d.innerText = v;
+      d.dataset.value = v;
+      d.onclick = function () {
+        return fillSlotByType("name", v);
+      };
+      g2.appendChild(d);
+    });
+  } else {
+    var _opts = shuffle([q.z].concat(_toConsumableArray(getDistractors(q, "z", 3))));
+    _opts.forEach(function (v) {
+      var d = document.createElement("div");
+      d.className = "option-item";
+      d.innerText = v;
+      d.dataset.value = v;
+      d.onclick = function () {
+        return fillSlotByType("z", v);
+      };
+      g2.appendChild(d);
+    });
+  }
+  dom.optionsArea.appendChild(g2);
+  updateOptionDisable();
+  updateCheckBtn();
+}
+function fillSlotByType(type, value) {
+  var t = state.slots.find(function (s) {
+    return s.type === type;
+  });
+  if (!t) return;
+  state.answerFilled[t.slotId] = value;
+  t.el.innerText = value;
+  t.el.classList.add("filled");
+  updateOptionDisable();
+  updateCheckBtn();
+}
+function updateOptionDisable() {
+  var used = Object.values(state.answerFilled).map(String);
+  document.querySelectorAll(".option-item").forEach(function (o) {
+    return o.classList.toggle("disabled", used.includes(String(o.dataset.value)));
+  });
+}
+function updateCheckBtn() {
+  dom.btnCheck.disabled = Object.keys(state.answerFilled).length < state.slots.length;
+}
+
+/* ===== 判斷題 ===== */
+function generateJudgeQuestion(forcedSubtype, forcedCorrect) {
+  var subtypes = ["atom", "atom_full", "ion", "compound", "covalent", "type", "type_name", "type_formula"];
+  var subtype = forcedSubtype || subtypes[Math.floor(Math.random() * subtypes.length)];
+  var isCorrect = forcedCorrect !== undefined ? forcedCorrect : Math.random() > 0.5;
+  var data,
+    diagram,
+    desc,
+    errorReason = "",
+    typeAnswer = null;
+  if (subtype === "atom") {
+    data = atomData[Math.floor(Math.random() * atomData.length)];
+    desc = "\u4EE5\u4E0B\u662F".concat(data.name, "\u539F\u5B50\uFF08").concat(data.symbol, "\uFF09\u7684\u96FB\u5B50\u5716\uFF08\u50C5\u756B\u51FA\u6700\u5916\u5C64\u96FB\u5B50\uFF09\uFF0C\u5224\u65B7\u662F\u5426\u6B63\u78BA");
+    if (isCorrect) {
+      diagram = renderElectronDiagram({
+        symbol: data.symbol,
+        valence: data.valence,
+        charge: null
+      });
+    } else {
+      var wv = data.valence + (Math.random() > 0.5 ? 1 : -1);
+      wv = Math.max(1, Math.min(8, wv));
+      if (wv === data.valence) wv = data.valence === 1 ? 2 : data.valence - 1;
+      diagram = renderElectronDiagram({
+        symbol: data.symbol,
+        valence: wv,
+        charge: null
+      });
+      errorReason = "".concat(data.name, "\u539F\u5B50\u6700\u5916\u5C64\u6709").concat(data.valence, "\u500B\u96FB\u5B50\uFF0C\u5716\u4E2D\u756B\u4E86").concat(wv, "\u500B\u3002");
+    }
+  } else if (subtype === "atom_full") {
+    data = atomData[Math.floor(Math.random() * atomData.length)];
+    var elem = elementList.find(function (e) {
+      return e.symbol === data.symbol;
+    });
+    var z = elem.z;
+    var caps = [2, 8, 8, 2];
+    var rem = z;
+    var shells = [];
+    for (var ci = 0; ci < caps.length && rem > 0; ci++) {
+      var n = Math.min(caps[ci], rem);
+      shells.push(n);
+      rem -= n;
+    }
+    desc = "\u4EE5\u4E0B\u662F".concat(data.name, "\u539F\u5B50\uFF08").concat(data.symbol, "\uFF09\u7684\u96FB\u5B50\u5716\uFF08\u756B\u51FA\u6240\u6709\u96FB\u5B50\u5C64\uFF09\uFF0C\u5224\u65B7\u662F\u5426\u6B63\u78BA");
+    if (isCorrect) {
+      diagram = renderFullElectronDiagram(data.symbol, shells);
+    } else {
+      var wrongShells = [].concat(shells);
+      var li = Math.floor(Math.random() * wrongShells.length);
+      var _wv = wrongShells[li] + (Math.random() > 0.5 ? 1 : -1);
+      _wv = Math.max(0, Math.min(caps[li], _wv));
+      if (_wv === wrongShells[li]) _wv = _wv === 0 ? 1 : _wv - 1;
+      wrongShells[li] = _wv;
+      diagram = renderFullElectronDiagram(data.symbol, wrongShells);
+      errorReason = "".concat(data.name, "\u539F\u5B50\u7B2C").concat(li + 1, "\u96FB\u5B50\u5C64\u61C9\u6709").concat(shells[li], "\u500B\u96FB\u5B50\uFF0C\u5716\u4E2D\u756B\u4E86").concat(_wv, "\u500B\u3002");
+    }
+  } else if (subtype === "ion") {
+    data = ionData[Math.floor(Math.random() * ionData.length)];
+    desc = "\u4EE5\u4E0B\u662F".concat(data.name, "\u7684\u96FB\u5B50\u5716\uFF08\u50C5\u756B\u51FA\u6700\u5916\u5C64\u96FB\u5B50\uFF09\uFF0C\u5224\u65B7\u662F\u5426\u6B63\u78BA");
+    if (data.polyatomic) {
+      var polyData = _objectSpread({}, polyatomicIonData[data.polyKey]);
+      if (isCorrect) {
+        diagram = renderPolyatomicIonDiagram(polyData);
+      } else {
+        var errType = Math.random();
+        if (errType < 0.4) {
+          var wc = data.charge === "+" ? "2+" : data.charge === "-" ? "2-" : "+";
+          polyData.charge = wc;
+          diagram = renderPolyatomicIonDiagram(polyData);
+          errorReason = "".concat(data.name, "\u7684\u96FB\u8377\u61C9\u70BA").concat(data.charge, "\uFF0C\u5716\u4E2D\u6A19\u70BA").concat(wc, "\u3002");
+        } else if (errType < 0.7 && polyData.e.length > 4) {
+          var wrongE = polyData.e.map(function (e) {
+            return _toConsumableArray(e);
+          });
+          wrongE.splice(Math.floor(Math.random() * wrongE.length), 1);
+          polyData.e = wrongE;
+          diagram = renderPolyatomicIonDiagram(polyData);
+          errorReason = "".concat(data.name, "\u7684\u96FB\u5B50\u5716\u7F3A\u5C11\u96FB\u5B50\uFF0C\u50F9\u96FB\u5B50\u7E3D\u6578\u4E0D\u6B63\u78BA\u3002");
+        } else {
+          var _wrongE = polyData.e.map(function (e) {
+            return _toConsumableArray(e);
+          });
+          var atom = polyData.atoms[0];
+          _wrongE.push([atom.x + 5, atom.y - atom.sz / 2, 0]);
+          polyData.e = _wrongE;
+          diagram = renderPolyatomicIonDiagram(polyData);
+          errorReason = "".concat(data.name, "\u7684\u96FB\u5B50\u5716\u591A\u4E86\u4E00\u500B\u96FB\u5B50\uFF0C\u50F9\u96FB\u5B50\u7E3D\u6578\u4E0D\u6B63\u78BA\u3002");
+        }
+      }
+    } else if (isCorrect) {
+      diagram = renderElectronDiagram({
+        symbol: data.symbol,
+        valence: data.valence,
+        charge: data.charge
+      });
+    } else {
+      var isCation = data.valence === 0;
+      var _errType = Math.random() > 0.5 ? "valence" : "charge";
+      if (_errType === "valence") {
+        if (isCation) {
+          var _wv2 = Math.random() > 0.4 ? 8 : Math.random() > 0.5 ? 1 : 2;
+          diagram = renderElectronDiagram({
+            symbol: data.symbol,
+            valence: _wv2,
+            charge: data.charge
+          });
+          errorReason = "".concat(data.name, "\u662F\u967D\u96E2\u5B50\uFF0C\u5931\u53BB\u6700\u5916\u5C64\u96FB\u5B50\uFF0C\u6700\u5916\u5C64\u61C9\u70BA\u7A7A\uFF08\u7121\u96FB\u5B50\u5C64\uFF09\uFF0C\u5716\u4E2D\u756B\u4E86").concat(_wv2, "\u500B\u96FB\u5B50\u3002");
+        } else {
+          diagram = renderElectronDiagram({
+            symbol: data.symbol,
+            valence: 7,
+            charge: data.charge
+          });
+          errorReason = "".concat(data.name, "\u6700\u5916\u5C64\u61C9\u67098\u500B\u96FB\u5B50\uFF08\u7A69\u5B9A\u7D50\u69CB\uFF09\uFF0C\u5716\u4E2D\u756B\u4E867\u500B\u3002");
+        }
+      } else {
+        var _wc;
+        if (data.charge === "+") _wc = "2+";else if (data.charge === "2+") _wc = "+";else if (data.charge === "3+") _wc = "2+";else if (data.charge === "-") _wc = "2-";else if (data.charge === "2-") _wc = "-";else _wc = "2-";
+        diagram = renderElectronDiagram({
+          symbol: data.symbol,
+          valence: data.valence,
+          charge: _wc
+        });
+        errorReason = "".concat(data.name, "\u7684\u96FB\u8377\u61C9\u70BA").concat(data.charge, "\uFF0C\u5716\u4E2D\u6A19\u70BA").concat(_wc, "\u3002");
+      }
+    }
+  } else if (subtype === "compound") {
+    data = compoundData[Math.floor(Math.random() * compoundData.length)];
+    desc = "\u4EE5\u4E0B\u662F".concat(data.name, "\u7684\u96FB\u5B50\u5716\uFF08\u50C5\u756B\u51FA\u6700\u5916\u5C64\u96FB\u5B50\uFF09\uFF0C\u5224\u65B7\u662F\u5426\u6B63\u78BA");
+    if (isCorrect) {
+      diagram = renderCompoundDiagram(data.ions.map(function (i) {
+        return _objectSpread({}, i);
+      }));
+    } else {
+      var wrongIons = data.ions.map(function (i) {
+        return _objectSpread({}, i);
+      });
+      var idx = Math.floor(Math.random() * wrongIons.length);
+      var target = wrongIons[idx];
+      var isPoly = !!target.polyatomic;
+      var _isCation = !isPoly && target.valence === 0;
+      var r = Math.random();
+      var _errType2 = isPoly ? r < 0.6 ? "charge" : "count" : r < 0.35 ? "valence" : r < 0.7 ? "charge" : "count";
+      if (_errType2 === "valence") {
+        if (_isCation) {
+          var _wv3 = Math.random() > 0.4 ? 8 : Math.random() > 0.5 ? 1 : 2;
+          wrongIons[idx].valence = _wv3;
+          errorReason = "".concat(wrongIons[idx].symbol, "\u662F\u967D\u96E2\u5B50\uFF0C\u6700\u5916\u5C64\u61C9\u70BA\u7A7A\uFF08\u7121\u96FB\u5B50\u5C64\uFF09\uFF0C\u5716\u4E2D\u756B\u4E86").concat(_wv3, "\u500B\u96FB\u5B50\u3002");
+        } else {
+          wrongIons[idx].valence = 7;
+          errorReason = "".concat(wrongIons[idx].symbol, "\u96E2\u5B50\u6700\u5916\u5C64\u61C9\u67098\u500B\u96FB\u5B50\uFF0C\u5716\u4E2D\u756B\u4E867\u500B\u3002");
+        }
+      } else if (_errType2 === "charge") {
+        var _wc2;
+        var c = wrongIons[idx].charge;
+        if (c === "+") _wc2 = "2+";else if (c === "2+") _wc2 = "+";else if (c === "-") _wc2 = "2-";else _wc2 = "-";
+        wrongIons[idx].charge = _wc2;
+        var ionName = wrongIons[idx].name || wrongIons[idx].symbol + "離子";
+        errorReason = "".concat(ionName, "\u7684\u96FB\u8377\u61C9\u70BA").concat(c, "\uFF0C\u5716\u4E2D\u6A19\u70BA").concat(_wc2, "\u3002");
+      } else {
+        var cc = wrongIons[idx].count;
+        var _wc3 = cc + (Math.random() > 0.5 ? 1 : -1);
+        if (_wc3 < 1) _wc3 = cc + 1;
+        wrongIons[idx].count = _wc3;
+        var ionName2 = wrongIons[idx].name || wrongIons[idx].symbol + "離子";
+        errorReason = "".concat(ionName2, "\u7684\u500B\u6578\u61C9\u70BA").concat(cc, "\uFF0C\u5716\u4E2D\u6A19\u70BA").concat(_wc3, "\u3002");
+      }
+      diagram = renderCompoundDiagram(wrongIons);
+    }
+  } else if (subtype === "covalent") {
+    data = covalentData[Math.floor(Math.random() * covalentData.length)];
+    desc = "\u4EE5\u4E0B\u662F".concat(data.name, "\u7684\u96FB\u5B50\u5716\uFF08\u50C5\u756B\u51FA\u6700\u5916\u5C64\u96FB\u5B50\uFF09\uFF0C\u5224\u65B7\u662F\u5426\u6B63\u78BA");
+    if (isCorrect) {
+      diagram = renderCovalentDiagram(data);
+    } else {
+      var wrongElectrons = data.e.map(function (e) {
+        return _toConsumableArray(e);
+      });
+      var _errType3 = Math.random();
+      if (_errType3 < 0.5 && data.lp.length > 0) {
+        var pair = data.lp[Math.floor(Math.random() * data.lp.length)];
+        wrongElectrons[pair[0]] = null;
+        wrongElectrons[pair[1]] = null;
+        errorReason = "".concat(data.name, "\u7684\u96FB\u5B50\u5716\u7F3A\u5C11\u4E00\u5C0D\u5B64\u5C0D\u96FB\u5B50\uFF0C\u539F\u5B50\u672A\u9054\u5230\u7A69\u5B9A\u7D50\u69CB\u3002");
+      } else if (_errType3 < 0.8) {
+        var _atom = data.atoms[Math.floor(Math.random() * data.atoms.length)];
+        var angle = Math.random() * Math.PI * 2;
+        var _r2 = _atom.sz / 2 - 2;
+        wrongElectrons.push([_atom.x + _r2 * Math.cos(angle), _atom.y + _r2 * Math.sin(angle)]);
+        errorReason = "".concat(data.name, "\u7684\u96FB\u5B50\u5716\u591A\u4E86\u4E00\u500B\u96FB\u5B50\uFF0C\u50F9\u96FB\u5B50\u7E3D\u6578\u4E0D\u6B63\u78BA\u3002");
+      } else if (data.bp.length > 1) {
+        var _pair = data.bp[Math.floor(Math.random() * data.bp.length)];
+        wrongElectrons[_pair[0]] = null;
+        wrongElectrons[_pair[1]] = null;
+        errorReason = "".concat(data.name, "\u7684\u5171\u7528\u96FB\u5B50\u5C0D\u6578\u91CF\u4E0D\u6B63\u78BA\uFF0C\u5316\u5B78\u9375\u985E\u578B\u932F\u8AA4\u3002");
+      } else {
+        var _atom2 = data.atoms[0];
+        wrongElectrons.push([_atom2.x, _atom2.y - _atom2.sz / 2]);
+        errorReason = "".concat(data.name, "\u7684\u96FB\u5B50\u5716\u96FB\u5B50\u7E3D\u6578\u4E0D\u6B63\u78BA\u3002");
+      }
+      var filtered = wrongElectrons.filter(function (e) {
+        return e !== null;
+      });
+      diagram = renderCovalentDiagram(data, filtered);
+    }
+  } else if (subtype === "type") {
+    var isIonic = Math.random() > 0.5;
+    desc = "\u4EE5\u4E0B\u662F\u67D0\u5316\u5408\u7269\u7684\u96FB\u5B50\u5716\uFF0C\u5224\u65B7\u5B83\u662F\u96E2\u5B50\u5316\u5408\u7269\u9084\u662F\u5171\u50F9\u5316\u5408\u7269";
+    if (isIonic) {
+      data = compoundData[Math.floor(Math.random() * compoundData.length)];
+      diagram = renderCompoundDiagram(data.ions.map(function (i) {
+        return _objectSpread({}, i);
+      }));
+      typeAnswer = "ionic";
+    } else {
+      data = covalentData[Math.floor(Math.random() * covalentData.length)];
+      diagram = renderCovalentDiagram(data);
+      typeAnswer = "covalent";
+    }
+  } else if (subtype === "type_name") {
+    data = typeCompoundData[Math.floor(Math.random() * typeCompoundData.length)];
+    desc = "\u4EE5\u4E0B\u5316\u5408\u7269\u5C6C\u65BC\u96E2\u5B50\u5316\u5408\u7269\u9084\u662F\u5171\u50F9\u5316\u5408\u7269\uFF1F";
+    var nameBox = document.createElement("div");
+    nameBox.className = "type-display";
+    nameBox.innerText = data.name;
+    diagram = nameBox;
+    typeAnswer = data.type;
+  } else {
+    data = typeCompoundData[Math.floor(Math.random() * typeCompoundData.length)];
+    desc = "\u4EE5\u4E0B\u5316\u5B78\u5F0F\u4EE3\u8868\u7684\u5316\u5408\u7269\u5C6C\u65BC\u96E2\u5B50\u5316\u5408\u7269\u9084\u662F\u5171\u50F9\u5316\u5408\u7269\uFF1F";
+    var formulaBox = document.createElement("div");
+    formulaBox.className = "type-display";
+    formulaBox.innerText = data.formula;
+    diagram = formulaBox;
+    typeAnswer = data.type;
+  }
+  return {
+    subtype: subtype,
+    isCorrect: isCorrect,
+    diagram: diagram,
+    desc: desc,
+    errorReason: errorReason,
+    typeAnswer: typeAnswer,
+    data: data || {}
+  };
+}
+function getShellsFromCount(n) {
+  var caps = [2, 8, 8, 2];
+  var shells = [];
+  var rem = n;
+  for (var i = 0; i < caps.length && rem > 0; i++) {
+    var v = Math.min(caps[i], rem);
+    shells.push(v);
+    rem -= v;
+  }
+  return shells;
+}
+function generateShellConfigQuestion() {
+  var isIon = Math.random() > 0.4;
+  var symbol, charge, shells;
+  if (isIon) {
+    var ion = ionData[Math.floor(Math.random() * ionData.length)];
+    if (ion.polyatomic) return generateShellConfigQuestion();
+    symbol = ion.symbol;
+    charge = ion.charge;
+    var z = elementList.find(function (e) {
+      return e.symbol === symbol;
+    }).z;
+    var cnum = parseInt(charge.replace(/[+-]/g, '')) || 1;
+    var ec = z + (charge.includes('-') ? cnum : -cnum);
+    shells = getShellsFromCount(ec);
+  } else {
+    var atom = atomData[Math.floor(Math.random() * atomData.length)];
+    symbol = atom.symbol;
+    charge = null;
+    var _z = elementList.find(function (e) {
+      return e.symbol === symbol;
+    }).z;
+    shells = getShellsFromCount(_z);
+  }
+  var isCorrect = Math.random() > 0.5;
+  var displayShells,
+    errorReason = "";
+  if (isCorrect) {
+    displayShells = _toConsumableArray(shells);
+  } else {
+    displayShells = _toConsumableArray(shells);
+    var idx = Math.floor(Math.random() * displayShells.length);
+    var caps = [2, 8, 8, 2];
+    var wv = displayShells[idx] + (Math.random() > 0.5 ? 1 : -1);
+    wv = Math.max(0, Math.min(caps[idx] || 8, wv));
+    if (wv === displayShells[idx]) wv = wv === 0 ? 1 : wv - 1;
+    displayShells[idx] = wv;
+    errorReason = "".concat(symbol, "\u7684\u7B2C").concat(idx + 1, "\u96FB\u5B50\u5C64\u61C9\u6709").concat(shells[idx], "\u500B\u96FB\u5B50\uFF0C\u5716\u4E2D\u6A19\u70BA").concat(wv, "\u500B\u3002");
+  }
+  var displaySymbol = charge ? symbol + '<sup>' + charge + '</sup>' : symbol;
+  var desc = "\u4EE5\u4E0B\u662F".concat(displaySymbol, "\u7684\u96FB\u5B50\u6392\u4F48\uFF0C\u5224\u65B7\u662F\u5426\u6B63\u78BA");
+  return {
+    subtype: "shell_config",
+    isCorrect: isCorrect,
+    displaySymbol: displaySymbol,
+    displayShells: displayShells,
+    desc: desc,
+    errorReason: errorReason
+  };
+}
+function renderShellConfigQuestion(q) {
+  dom.questionBody.innerHTML = "";
+  dom.optionsArea.innerHTML = "";
+  dom.btnWrap.style.display = "flex";
+  dom.btnCheck.style.display = "none";
+  dom.typeHint.innerText = "電子排佈判斷題";
+  var desc = document.createElement("div");
+  desc.className = "judge-desc";
+  desc.innerHTML = q.desc;
+  dom.questionBody.appendChild(desc);
+  var box = document.createElement("div");
+  box.className = "shell-config-box";
+  var sym = document.createElement("div");
+  sym.className = "shell-config-symbol";
+  sym.innerHTML = q.displaySymbol;
+  var cfg = document.createElement("div");
+  cfg.className = "shell-config-text";
+  cfg.textContent = q.displayShells.join(", ");
+  box.appendChild(sym);
+  box.appendChild(cfg);
+  dom.questionBody.appendChild(box);
+  var opts = document.createElement("div");
+  opts.className = "judge-options";
+  var b1 = document.createElement("div");
+  b1.className = "judge-btn correct";
+  b1.innerText = "正確";
+  b1.onclick = function () {
+    return checkJudgeAnswer(true);
+  };
+  var b2 = document.createElement("div");
+  b2.className = "judge-btn wrong";
+  b2.innerText = "錯誤";
+  b2.onclick = function () {
+    return checkJudgeAnswer(false);
+  };
+  opts.appendChild(b1);
+  opts.appendChild(b2);
+  dom.optionsArea.appendChild(opts);
+}
+var compoundNameData = [{
+  formula: "NaCl",
+  neg: "氯",
+  link: "化",
+  pos: "鈉"
+}, {
+  formula: "KCl",
+  neg: "氯",
+  link: "化",
+  pos: "鉀"
+}, {
+  formula: "MgCl₂",
+  neg: "氯",
+  link: "化",
+  pos: "鎂"
+}, {
+  formula: "CaCl₂",
+  neg: "氯",
+  link: "化",
+  pos: "鈣"
+}, {
+  formula: "AlCl₃",
+  neg: "氯",
+  link: "化",
+  pos: "鋁"
+}, {
+  formula: "NaF",
+  neg: "氟",
+  link: "化",
+  pos: "鈉"
+}, {
+  formula: "KF",
+  neg: "氟",
+  link: "化",
+  pos: "鉀"
+}, {
+  formula: "MgF₂",
+  neg: "氟",
+  link: "化",
+  pos: "鎂"
+}, {
+  formula: "CaF₂",
+  neg: "氟",
+  link: "化",
+  pos: "鈣"
+}, {
+  formula: "Na₂S",
+  neg: "硫",
+  link: "化",
+  pos: "鈉"
+}, {
+  formula: "MgS",
+  neg: "硫",
+  link: "化",
+  pos: "鎂"
+}, {
+  formula: "K₂S",
+  neg: "硫",
+  link: "化",
+  pos: "鉀"
+}, {
+  formula: "Na₂SO₄",
+  neg: "硫",
+  link: "酸",
+  pos: "鈉"
+}, {
+  formula: "K₂SO₄",
+  neg: "硫",
+  link: "酸",
+  pos: "鉀"
+}, {
+  formula: "MgSO₄",
+  neg: "硫",
+  link: "酸",
+  pos: "鎂"
+}, {
+  formula: "CaSO₄",
+  neg: "硫",
+  link: "酸",
+  pos: "鈣"
+}, {
+  formula: "NaNO₃",
+  neg: "硝",
+  link: "酸",
+  pos: "鈉"
+}, {
+  formula: "KNO₃",
+  neg: "硝",
+  link: "酸",
+  pos: "鉀"
+}, {
+  formula: "Mg(NO₃)₂",
+  neg: "硝",
+  link: "酸",
+  pos: "鎂"
+}, {
+  formula: "Ca(NO₃)₂",
+  neg: "硝",
+  link: "酸",
+  pos: "鈣"
+}, {
+  formula: "Al(NO₃)₃",
+  neg: "硝",
+  link: "酸",
+  pos: "鋁"
+}, {
+  formula: "Fe(NO₃)₂",
+  neg: "硝",
+  link: "酸",
+  pos: "鐵",
+  roman: "II"
+}, {
+  formula: "Fe(NO₃)₃",
+  neg: "硝",
+  link: "酸",
+  pos: "鐵",
+  roman: "III"
+}, {
+  formula: "Cu(NO₃)₂",
+  neg: "硝",
+  link: "酸",
+  pos: "銅",
+  roman: "II"
+}, {
+  formula: "CuSO₄",
+  neg: "硫",
+  link: "酸",
+  pos: "銅",
+  roman: "II"
+}, {
+  formula: "Na₂CO₃",
+  neg: "碳",
+  link: "酸",
+  pos: "鈉"
+}, {
+  formula: "MgCO₃",
+  neg: "碳",
+  link: "酸",
+  pos: "鎂"
+}, {
+  formula: "CaCO₃",
+  neg: "碳",
+  link: "酸",
+  pos: "鈣"
+}, {
+  formula: "K₂CO₃",
+  neg: "碳",
+  link: "酸",
+  pos: "鉀"
+}, {
+  formula: "NaOH",
+  neg: "氫氧",
+  link: "化",
+  pos: "鈉"
+}, {
+  formula: "KOH",
+  neg: "氫氧",
+  link: "化",
+  pos: "鉀"
+}, {
+  formula: "Mg(OH)₂",
+  neg: "氫氧",
+  link: "化",
+  pos: "鎂"
+}, {
+  formula: "Ca(OH)₂",
+  neg: "氫氧",
+  link: "化",
+  pos: "鈣"
+}, {
+  formula: "Na₂O",
+  neg: "氧",
+  link: "化",
+  pos: "鈉"
+}, {
+  formula: "MgO",
+  neg: "氧",
+  link: "化",
+  pos: "鎂"
+}, {
+  formula: "CaO",
+  neg: "氧",
+  link: "化",
+  pos: "鈣"
+}, {
+  formula: "Al₂O₃",
+  neg: "氧",
+  link: "化",
+  pos: "鋁"
+}, {
+  formula: "K₂O",
+  neg: "氧",
+  link: "化",
+  pos: "鉀"
+}, {
+  formula: "CO₂",
+  neg: "氧",
+  link: "化",
+  pos: "碳",
+  fullName: "二氧化碳"
+}, {
+  formula: "CO",
+  neg: "氧",
+  link: "化",
+  pos: "碳",
+  fullName: "一氧化碳"
+}, {
+  formula: "SO₂",
+  neg: "氧",
+  link: "化",
+  pos: "硫",
+  fullName: "二氧化硫"
+}, {
+  formula: "SO₃",
+  neg: "氧",
+  link: "化",
+  pos: "硫",
+  fullName: "三氧化硫"
+}, {
+  formula: "NO",
+  neg: "氧",
+  link: "化",
+  pos: "氮",
+  fullName: "一氧化氮"
+}, {
+  formula: "NO₂",
+  neg: "氧",
+  link: "化",
+  pos: "氮",
+  fullName: "二氧化氮"
+}, {
+  formula: "N₂O₃",
+  neg: "氧",
+  link: "化",
+  pos: "氮",
+  fullName: "三氧化二氮"
+}, {
+  formula: "N₂O₄",
+  neg: "氧",
+  link: "化",
+  pos: "氮",
+  fullName: "四氧化二氮"
+}, {
+  formula: "N₂O₅",
+  neg: "氧",
+  link: "化",
+  pos: "氮",
+  fullName: "五氧化二氮"
+}, {
+  formula: "N₂O",
+  neg: "氧",
+  link: "化",
+  pos: "氮",
+  fullName: "一氧化二氮"
+}, {
+  formula: "P₂O₅",
+  neg: "氧",
+  link: "化",
+  pos: "磷",
+  fullName: "五氧化二磷"
+}, {
+  formula: "SiO₂",
+  neg: "氧",
+  link: "化",
+  pos: "硅",
+  fullName: "二氧化硅"
+}, {
+  formula: "FeCl₂",
+  neg: "氯",
+  link: "化",
+  pos: "鐵",
+  roman: "II"
+}, {
+  formula: "FeCl₃",
+  neg: "氯",
+  link: "化",
+  pos: "鐵",
+  roman: "III"
+}, {
+  formula: "FeO",
+  neg: "氧",
+  link: "化",
+  pos: "鐵",
+  roman: "II"
+}, {
+  formula: "Fe₂O₃",
+  neg: "氧",
+  link: "化",
+  pos: "鐵",
+  roman: "III"
+}, {
+  formula: "FeSO₄",
+  neg: "硫",
+  link: "酸",
+  pos: "鐵",
+  roman: "II"
+}, {
+  formula: "Fe₂(SO₄)₃",
+  neg: "硫",
+  link: "酸",
+  pos: "鐵",
+  roman: "III"
+}, {
+  formula: "CuCl₂",
+  neg: "氯",
+  link: "化",
+  pos: "銅",
+  roman: "II"
+}, {
+  formula: "CuCl",
+  neg: "氯",
+  link: "化",
+  pos: "銅",
+  roman: "I"
+}, {
+  formula: "CuO",
+  neg: "氧",
+  link: "化",
+  pos: "銅",
+  roman: "II"
+}, {
+  formula: "Cu₂O",
+  neg: "氧",
+  link: "化",
+  pos: "銅",
+  roman: "I"
+}, {
+  formula: "PbO",
+  neg: "氧",
+  link: "化",
+  pos: "鉛",
+  roman: "II"
+}, {
+  formula: "PbO₂",
+  neg: "氧",
+  link: "化",
+  pos: "鉛",
+  roman: "IV"
+}, {
+  formula: "MnO",
+  neg: "氧",
+  link: "化",
+  pos: "錳",
+  roman: "II"
+}, {
+  formula: "MnO₂",
+  neg: "氧",
+  link: "化",
+  pos: "錳",
+  roman: "IV"
+}, {
+  formula: "Mn₂O₃",
+  neg: "氧",
+  link: "化",
+  pos: "錳",
+  roman: "III"
+}, {
+  formula: "Mn₂O₇",
+  neg: "氧",
+  link: "化",
+  pos: "錳",
+  roman: "VII"
+}, {
+  formula: "NaBr",
+  neg: "溴",
+  link: "化",
+  pos: "鈉"
+}, {
+  formula: "KBr",
+  neg: "溴",
+  link: "化",
+  pos: "鉀"
+}, {
+  formula: "MgBr₂",
+  neg: "溴",
+  link: "化",
+  pos: "鎂"
+}, {
+  formula: "CaBr₂",
+  neg: "溴",
+  link: "化",
+  pos: "鈣"
+}, {
+  formula: "AlBr₃",
+  neg: "溴",
+  link: "化",
+  pos: "鋁"
+}, {
+  formula: "FeBr₂",
+  neg: "溴",
+  link: "化",
+  pos: "鐵",
+  roman: "II"
+}, {
+  formula: "FeBr₃",
+  neg: "溴",
+  link: "化",
+  pos: "鐵",
+  roman: "III"
+}, {
+  formula: "CuBr₂",
+  neg: "溴",
+  link: "化",
+  pos: "銅",
+  roman: "II"
+}, {
+  formula: "HBr",
+  neg: "溴",
+  link: "化",
+  pos: "氫"
+}, {
+  formula: "NaI",
+  neg: "碘",
+  link: "化",
+  pos: "鈉"
+}, {
+  formula: "KI",
+  neg: "碘",
+  link: "化",
+  pos: "鉀"
+}, {
+  formula: "MgI₂",
+  neg: "碘",
+  link: "化",
+  pos: "鎂"
+}, {
+  formula: "CaI₂",
+  neg: "碘",
+  link: "化",
+  pos: "鈣"
+}, {
+  formula: "FeI₂",
+  neg: "碘",
+  link: "化",
+  pos: "鐵",
+  roman: "II"
+}, {
+  formula: "HI",
+  neg: "碘",
+  link: "化",
+  pos: "氫"
+}, {
+  formula: "AgCl",
+  neg: "氯",
+  link: "化",
+  pos: "銀"
+}, {
+  formula: "AgNO₃",
+  neg: "硝",
+  link: "酸",
+  pos: "銀"
+}, {
+  formula: "Ag₂O",
+  neg: "氧",
+  link: "化",
+  pos: "銀"
+}, {
+  formula: "ZnCl₂",
+  neg: "氯",
+  link: "化",
+  pos: "鋅"
+}, {
+  formula: "ZnSO₄",
+  neg: "硫",
+  link: "酸",
+  pos: "鋅"
+}, {
+  formula: "ZnO",
+  neg: "氧",
+  link: "化",
+  pos: "鋅"
+}, {
+  formula: "Zn(NO₃)₂",
+  neg: "硝",
+  link: "酸",
+  pos: "鋅"
+}, {
+  formula: "CrCl₂",
+  neg: "氯",
+  link: "化",
+  pos: "鉻",
+  roman: "II"
+}, {
+  formula: "CrO",
+  neg: "氧",
+  link: "化",
+  pos: "鉻",
+  roman: "II"
+}, {
+  formula: "CrSO₄",
+  neg: "硫",
+  link: "酸",
+  pos: "鉻",
+  roman: "II"
+}, {
+  formula: "CrCl₃",
+  neg: "氯",
+  link: "化",
+  pos: "鉻",
+  roman: "III"
+}, {
+  formula: "Cr₂O₃",
+  neg: "氧",
+  link: "化",
+  pos: "鉻",
+  roman: "III"
+}, {
+  formula: "Cr₂(SO₄)₃",
+  neg: "硫",
+  link: "酸",
+  pos: "鉻",
+  roman: "III"
+}, {
+  formula: "CrO₃",
+  neg: "氧",
+  link: "化",
+  pos: "鉻",
+  roman: "VI"
+}, {
+  formula: "CoCl₂",
+  neg: "氯",
+  link: "化",
+  pos: "鈷",
+  roman: "II"
+}, {
+  formula: "CoO",
+  neg: "氧",
+  link: "化",
+  pos: "鈷",
+  roman: "II"
+}, {
+  formula: "CoSO₄",
+  neg: "硫",
+  link: "酸",
+  pos: "鈷",
+  roman: "II"
+}, {
+  formula: "NiCl₂",
+  neg: "氯",
+  link: "化",
+  pos: "鎳",
+  roman: "II"
+}, {
+  formula: "NiO",
+  neg: "氧",
+  link: "化",
+  pos: "鎳",
+  roman: "II"
+}, {
+  formula: "NiSO₄",
+  neg: "硫",
+  link: "酸",
+  pos: "鎳",
+  roman: "II"
+}, {
+  formula: "MnCl₂",
+  neg: "氯",
+  link: "化",
+  pos: "錳",
+  roman: "II"
+}, {
+  formula: "MnSO₄",
+  neg: "硫",
+  link: "酸",
+  pos: "錳",
+  roman: "II"
+}, {
+  formula: "Mn(NO₃)₂",
+  neg: "硝",
+  link: "酸",
+  pos: "錳",
+  roman: "II"
+}];
+function numToChinese(n) {
+  var m = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
+  return m[n] || String(n);
+}
+var elementRadical = {
+  "氫": "气",
+  "氦": "气",
+  "鋰": "金",
+  "鈹": "金",
+  "硼": "石",
+  "碳": "石",
+  "氮": "气",
+  "氧": "气",
+  "氟": "气",
+  "氖": "气",
+  "鈉": "金",
+  "鎂": "金",
+  "鋁": "金",
+  "硅": "石",
+  "磷": "石",
+  "硫": "石",
+  "氯": "气",
+  "氬": "气",
+  "鉀": "金",
+  "鈣": "金",
+  "鐵": "金",
+  "銅": "金",
+  "鉛": "金",
+  "錳": "金",
+  "溴": "氵",
+  "碘": "石",
+  "銀": "金",
+  "鋅": "金",
+  "鉻": "金",
+  "鈷": "金",
+  "鎳": "金"
+};
+var nameToSymbol = {
+  "氫": "H",
+  "氦": "He",
+  "鋰": "Li",
+  "鈹": "Be",
+  "硼": "B",
+  "碳": "C",
+  "氮": "N",
+  "氧": "O",
+  "氟": "F",
+  "氖": "Ne",
+  "鈉": "Na",
+  "鎂": "Mg",
+  "鋁": "Al",
+  "硅": "Si",
+  "磷": "P",
+  "硫": "S",
+  "氯": "Cl",
+  "氬": "Ar",
+  "鉀": "K",
+  "鈣": "Ca",
+  "鐵": "Fe",
+  "銅": "Cu",
+  "鉛": "Pb",
+  "錳": "Mn",
+  "溴": "Br",
+  "碘": "I",
+  "銀": "Ag",
+  "鋅": "Zn",
+  "鉻": "Cr",
+  "鈷": "Co",
+  "鎳": "Ni"
+};
+function numToRoman(n) {
+  var m = [[10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]];
+  var r = "";
+  for (var _i2 = 0, _m = m; _i2 < _m.length; _i2++) {
+    var _m$_i = _slicedToArray(_m[_i2], 2),
+      v = _m$_i[0],
+      s = _m$_i[1];
+    while (n >= v) {
+      r += s;
+      n -= v;
+    }
+  }
+  return r;
+}
+function pureElementName(name) {
+  return name.replace(/^[一二三四五六七八九]+/, "").replace(/\（[IVX]+\）/g, "").replace(/\([IVX]+\)/g, "");
+}
+function pickDistractors(correct, allOpts, count) {
+  var pn = pureElementName(correct);
+  var radical = elementRadical[pn];
+  var sym = nameToSymbol[pn];
+  var fl = sym ? sym[0] : null;
+  var scored = allOpts.filter(function (x) {
+    return x !== correct;
+  }).map(function (x) {
+    var xp = pureElementName(x);
+    var sc = 0;
+    if (radical && elementRadical[xp] === radical) sc += 2;
+    if (fl && nameToSymbol[xp] && nameToSymbol[xp][0] === fl) sc += 1;
+    return {
+      x: x,
+      sc: sc
+    };
+  });
+  var good = shuffle(scored.filter(function (s) {
+    return s.sc > 0;
+  })).map(function (s) {
+    return s.x;
+  });
+  var bad = shuffle(scored.filter(function (s) {
+    return s.sc === 0;
+  })).map(function (s) {
+    return s.x;
+  });
+  return [].concat(_toConsumableArray(good), _toConsumableArray(bad)).slice(0, count);
+}
+function parseFormulaCounts(formula) {
+  var subMap = {
+    "₂": 2,
+    "₃": 3,
+    "₄": 4,
+    "₅": 5,
+    "₆": 6,
+    "₇": 7,
+    "₈": 8,
+    "₉": 9
+  };
+  var counts = {};
+  var regex = /([A-Z][a-z]?)([₂₃₄₅₆₇₈₉]?)/g;
+  var m;
+  while ((m = regex.exec(formula)) !== null) {
+    counts[m[1]] = m[2] ? subMap[m[2]] : 1;
+  }
+  return counts;
+}
+var symbolToName = {
+  C: "碳",
+  S: "硫",
+  N: "氮",
+  P: "磷",
+  Si: "硅",
+  O: "氧",
+  H: "氫"
+};
+var fixedOx = {
+  "鋰": 1,
+  "鈹": 2,
+  "鈉": 1,
+  "鎂": 2,
+  "鋁": 3,
+  "鉀": 1,
+  "鈣": 2,
+  "銀": 1,
+  "鋅": 2
+};
+function buildPosOptions(data, posAnswer, allPos, extraMustRoman, extraMustNoRoman) {
+  if (data.pos === "鈉") return shuffle(["鈉", "鈉(I)", "鉀", "鉀(I)"]);
+  if (data.pos === "鉀") return shuffle(["鉀", "鉀(I)", "鈉", "鈉(I)"]);
+  var specialMetals = ["鈷", "鈣", "銅", "鉻"];
+  var specialRoman = {
+    "鈷": "II",
+    "鈣": "II",
+    "銅": "II",
+    "鉻": "II"
+  };
+  if (specialMetals.includes(data.pos)) {
+    var others = specialMetals.filter(function (x) {
+      return x !== data.pos;
+    });
+    var pick = others[Math.floor(Math.random() * others.length)];
+    var myRoman = data.roman ? data.pos + "(" + data.roman + ")" : data.pos + "(" + specialRoman[data.pos] + ")";
+    var pickRoman = pick + "(" + specialRoman[pick] + ")";
+    return shuffle([myRoman, data.pos, pickRoman, pick]);
+  }
+  var posWithRoman = allPos.filter(function (x) {
+    return x.includes("(");
+  });
+  var posNoRoman = allPos.filter(function (x) {
+    return !x.includes("(");
+  });
+  var mustRoman = _toConsumableArray(extraMustRoman || []);
+  var mustNoRoman = _toConsumableArray(extraMustNoRoman || []);
+  if (data.roman) {
+    if (!mustRoman.includes(posAnswer)) mustRoman.push(posAnswer);
+    var sameMetalOther = _toConsumableArray(new Set(compoundNameData.filter(function (d) {
+      return d.pos === data.pos && d.roman !== data.roman;
+    }).map(function (d) {
+      return d.pos + "(" + d.roman + ")";
+    })));
+    if (sameMetalOther.length > 0 && mustRoman.length < 2) mustRoman.push(sameMetalOther[0]);
+    if (!mustNoRoman.includes(data.pos)) mustNoRoman.push(data.pos);
+  } else {
+    if (!mustNoRoman.includes(posAnswer)) mustNoRoman.push(posAnswer);
+    if (fixedOx[data.pos]) {
+      var r = data.pos + "(" + numToRoman(fixedOx[data.pos]) + ")";
+      if (!mustRoman.includes(r)) mustRoman.push(r);
+    }
+  }
+  mustRoman = _toConsumableArray(new Set(mustRoman));
+  mustNoRoman = _toConsumableArray(new Set(mustNoRoman));
+  var needRoman = Math.max(0, 2 - mustRoman.length);
+  var needNoRoman = Math.max(0, 2 - mustNoRoman.length);
+  var extraRoman = shuffle(posWithRoman.filter(function (x) {
+    return !mustRoman.includes(x);
+  })).slice(0, needRoman);
+  var extraNoRoman = shuffle(posNoRoman.filter(function (x) {
+    return !mustNoRoman.includes(x);
+  })).slice(0, needNoRoman);
+  return shuffle([].concat(_toConsumableArray(mustRoman), _toConsumableArray(mustNoRoman), _toConsumableArray(extraRoman), _toConsumableArray(extraNoRoman)));
+}
+function generateCompoundNameQuestion() {
+  var data = compoundNameData[Math.floor(Math.random() * compoundNameData.length)];
+  var allNeg = _toConsumableArray(new Set(compoundNameData.map(function (d) {
+    return d.neg;
+  })));
+  var allPos = _toConsumableArray(new Set(compoundNameData.map(function (d) {
+    return d.roman ? d.pos + "(" + d.roman + ")" : d.pos;
+  })));
+  var nonMetals = ["碳", "硫", "氮", "磷", "硅", "氫"];
+  var isOxide = data.neg === "氧";
+  var isNonMetalOxide = isOxide && nonMetals.includes(data.pos);
+  var negAnswer = data.neg;
+  var posAnswer = data.roman ? data.pos + "(" + data.roman + ")" : data.pos;
+  var negOpts, posOpts;
+  if (isOxide) {
+    var counts = parseFormulaCounts(data.formula);
+    var oCount = counts["O"] || 1;
+    var posSymbol = null;
+    for (var sym in counts) {
+      if (sym !== "O") {
+        posSymbol = sym;
+        break;
+      }
+    }
+    var posCount = posSymbol ? counts[posSymbol] : 1;
+    var oHan = numToChinese(oCount);
+    var posHan = numToChinese(posCount);
+    var xOxygen = oHan + "氧";
+    var zY = posCount > 1 ? posHan + data.pos : data.pos;
+    if (isNonMetalOxide) {
+      negAnswer = xOxygen;
+      posAnswer = zY;
+    }
+    var negMust = ["氧", xOxygen];
+    if (data.formula === "CoO") negMust.push("二氧");
+    var otherNeg = pickDistractors(xOxygen, allNeg.filter(function (x) {
+      return !negMust.includes(x);
+    }), 4 - negMust.length);
+    negOpts = shuffle([].concat(negMust, _toConsumableArray(otherNeg)));
+    if (isNonMetalOxide) {
+      var oxidation = Math.round(2 * oCount / posCount);
+      var posWithRoman = data.pos + "(" + numToRoman(oxidation) + ")";
+      posOpts = buildPosOptions(data, posAnswer, allPos, [posWithRoman], [data.pos, zY]);
+    } else if (data.formula === "CoO") {
+      posOpts = buildPosOptions(data, posAnswer, allPos, [], ["碳"]);
+    } else {
+      posOpts = buildPosOptions(data, posAnswer, allPos);
+    }
+  } else {
+    negOpts = shuffle([data.neg].concat(_toConsumableArray(pickDistractors(data.neg, allNeg.filter(function (x) {
+      return x !== data.neg;
+    }), 3))));
+    posOpts = buildPosOptions(data, posAnswer, allPos);
+  }
+  return {
+    subtype: "compound_name",
+    formula: data.formula,
+    answer: {
+      neg: negAnswer,
+      link: data.link,
+      pos: posAnswer
+    },
+    negOpts: negOpts,
+    linkOpts: ["化", "酸"],
+    posOpts: posOpts
+  };
+}
+function renderCompoundNameQuestion(q) {
+  dom.questionBody.innerHTML = "";
+  dom.optionsArea.innerHTML = "";
+  dom.btnWrap.style.display = "flex";
+  dom.btnCheck.style.display = "inline-block";
+  dom.btnCheck.disabled = true;
+  dom.typeHint.innerText = "化合物名稱填空題";
+  var desc = document.createElement("div");
+  desc.className = "judge-desc";
+  desc.innerText = "請選填以下化合物的中文名稱";
+  dom.questionBody.appendChild(desc);
+  var formula = document.createElement("div");
+  formula.className = "compound-formula";
+  formula.textContent = q.formula;
+  dom.questionBody.appendChild(formula);
+  var container = document.createElement("div");
+  container.className = "name-quiz-container";
+  var row = document.createElement("div");
+  row.className = "name-columns-row";
+  state.slots = [{
+    slotId: "neg",
+    type: "neg",
+    el: null
+  }, {
+    slotId: "link",
+    type: "link",
+    el: null
+  }, {
+    slotId: "pos",
+    type: "pos",
+    el: null
+  }];
+  state.answerFilled = {};
+  var cols = [{
+    type: "neg",
+    opts: q.negOpts,
+    isLink: false
+  }, {
+    type: "link",
+    opts: q.linkOpts,
+    isLink: true
+  }, {
+    type: "pos",
+    opts: q.posOpts,
+    isLink: false
+  }];
+  cols.forEach(function (c, ci) {
+    var col = document.createElement("div");
+    col.className = "name-col";
+    var slot = document.createElement("div");
+    slot.className = "name-slot";
+    state.slots[ci].el = slot;
+    col.appendChild(slot);
+    var conn = document.createElement("div");
+    conn.className = "connector-line";
+    col.appendChild(conn);
+    var box = document.createElement("div");
+    box.className = "opt-box";
+    var grid = document.createElement("div");
+    grid.className = c.isLink ? "opt-grid-link" : "opt-grid-2x2";
+    c.opts.forEach(function (v) {
+      var d = document.createElement("div");
+      d.className = "option-item";
+      d.innerText = v;
+      d.onclick = function () {
+        return fillNameSlot(c.type, v);
+      };
+      grid.appendChild(d);
+    });
+    box.appendChild(grid);
+    col.appendChild(box);
+    row.appendChild(col);
+    if (ci < 2) {
+      var div = document.createElement("div");
+      div.className = "opt-divider";
+      row.appendChild(div);
+    }
+  });
+  container.appendChild(row);
+  dom.optionsArea.appendChild(container);
+}
+function fillNameSlot(type, value) {
+  var s = state.slots.find(function (x) {
+    return x.type === type;
+  });
+  if (!s) return;
+  state.answerFilled[type] = value;
+  s.el.innerText = value;
+  s.el.classList.add("filled");
+  dom.btnCheck.disabled = !(state.answerFilled.neg && state.answerFilled.link && state.answerFilled.pos);
+}
+function checkCompoundNameAnswer() {
+  dom.btnCheck.disabled = true;
+  var q = state.currentQuestion;
+  state.total++;
+  state.sessionTotal++;
+  var ok = state.answerFilled.neg === q.answer.neg && state.answerFilled.link === q.answer.link && state.answerFilled.pos === q.answer.pos;
+  if (ok) {
+    state.correct++;
+    state.sessionCorrect++;
+    showFeedback("回答正確！", true);
+  } else showFeedback("\u56DE\u7B54\u932F\u8AA4\uFF0C\u6B63\u78BA\uFF1A".concat(q.answer.neg).concat(q.answer.link).concat(q.answer.pos), false);
+  if (!ok) {
+    try {
+      var _wi3 = {
+        type: '化合物名稱填空',
+        question: '請選填化合物 ' + q.formula + ' 的中文名稱',
+        userAnswer: (state.answerFilled.neg || '') + (state.answerFilled.link || '') + (state.answerFilled.pos || ''),
+        correctAnswer: q.answer.neg + q.answer.link + q.answer.pos,
+        explanation: '化學式 ' + q.formula + ' 的中文名稱是 ' + q.answer.neg + q.answer.link + q.answer.pos
+      };
+      WrongBook.add(_wi3);
+    } catch(e) {}
+  }
+  updateScore();
+  afterAnswer(ok);
+}
+var specialFormulaChoices = [{
+  name: "高錳酸鉀",
+  formula: "KMnO₄",
+  distractors: [{
+    name: "錳酸鉀",
+    formula: "K₂MnO₄"
+  }, {
+    name: "高錳酸鈉",
+    formula: "NaMnO₄"
+  }, {
+    name: "二氧化錳",
+    formula: "MnO₂"
+  }]
+}, {
+  name: "鉻酸鉀",
+  formula: "K₂CrO₄",
+  distractors: [{
+    name: "重鉻酸鉀",
+    formula: "K₂Cr₂O₇"
+  }, {
+    name: "鉻酸鈉",
+    formula: "Na₂CrO₄"
+  }, {
+    name: "二氧化鉻",
+    formula: "CrO₂"
+  }]
+}, {
+  name: "重鉻酸鉀",
+  formula: "K₂Cr₂O₇",
+  distractors: [{
+    name: "鉻酸鉀",
+    formula: "K₂CrO₄"
+  }, {
+    name: "重鉻酸鈉",
+    formula: "Na₂Cr₂O₇"
+  }, {
+    name: "三氧化鉻",
+    formula: "CrO₃"
+  }]
+}];
+var specialFormulas = specialFormulaChoices.map(function (s) {
+  return s.formula;
+});
+var specialFormulaMap = {
+  "鈷": {
+    "氯": "CoCl₂",
+    "氧": "CoO",
+    "硫": "CoSO₄"
+  },
+  "鈣": {
+    "氯": "CaCl₂",
+    "氧": "CaO",
+    "硫": "CaSO₄"
+  },
+  "銅": {
+    "氯": "CuCl₂",
+    "氧": "CuO",
+    "硫": "CuSO₄"
+  },
+  "鉻": {
+    "氯": "CrCl₂",
+    "氧": "CrO",
+    "硫": "CrSO₄"
+  }
+};
+var specialFMetals = ["鈷", "鈣", "銅", "鉻"];
+var specialFormulaDistractors = {
+  "CuCl": {
+    must: ["CuCl₂"],
+    fromMetals: ["鈷", "鈣", "鉻"],
+    count: 2
+  },
+  "Cu₂O": {
+    must: ["CuO"],
+    fromMetals: ["鈷", "鈣", "鉻"],
+    count: 2
+  },
+  "CrCl₂": {
+    must: ["CrCl₃"],
+    fromMetals: ["鈷", "銅", "鈣"],
+    count: 2
+  },
+  "Cr₂O₃": {
+    must: ["CrO₃", "CrO"],
+    fromMetals: ["鈷", "銅", "鈣"],
+    count: 1
+  }
+};
+var formulaChoiceData = [].concat(_toConsumableArray(compoundNameData.filter(function (d) {
+  return !specialFormulas.includes(d.formula);
+}).map(function (d) {
+  return {
+    name: d.fullName || d.neg + d.link + (d.roman ? d.pos + "(" + d.roman + ")" : d.pos),
+    formula: d.formula
+  };
+})), specialFormulaChoices);
+function generateFormulaChoiceQuestion() {
+  var data = formulaChoiceData[Math.floor(Math.random() * formulaChoiceData.length)];
+  var origData = compoundNameData.find(function (d) {
+    return d.formula === data.formula;
+  });
+  var distractors;
+  if (data.distractors) {
+    distractors = data.distractors;
+  } else if (specialFormulaDistractors[data.formula]) {
+    var sd = specialFormulaDistractors[data.formula];
+    var mustItems = sd.must.map(function (f) {
+      return formulaChoiceData.find(function (x) {
+        return x.formula === f;
+      }) || {
+        name: f,
+        formula: f
+      };
+    });
+    var metalFormulas = shuffle(sd.fromMetals.map(function (m) {
+      return specialFormulaMap[m][origData.neg];
+    }).filter(Boolean)).slice(0, sd.count);
+    var metalItems = metalFormulas.map(function (f) {
+      return formulaChoiceData.find(function (x) {
+        return x.formula === f;
+      }) || {
+        name: f,
+        formula: f
+      };
+    });
+    distractors = [].concat(_toConsumableArray(mustItems), _toConsumableArray(metalItems));
+  } else if (origData && specialFMetals.includes(origData.pos) && specialFormulaMap[origData.pos][origData.neg]) {
+    var otherMetals = specialFMetals.filter(function (x) {
+      return x !== origData.pos;
+    });
+    distractors = otherMetals.map(function (metal) {
+      var f = specialFormulaMap[metal][origData.neg];
+      return formulaChoiceData.find(function (x) {
+        return x.formula === f;
+      }) || {
+        name: metal + "化物",
+        formula: f
+      };
+    }).filter(Boolean);
+  } else if (origData && ["氟", "溴", "碘", "硝", "碳", "氫氧"].includes(origData.neg)) {
+    var sameAnion = formulaChoiceData.filter(function (x) {
+      var od = compoundNameData.find(function (d) {
+        return d.formula === x.formula;
+      });
+      return od && od.neg === origData.neg && x.formula !== data.formula;
+    });
+    distractors = shuffle(sameAnion).slice(0, 3);
+  } else if (origData && origData.roman) {
+    var sameMetalSameAnion = compoundNameData.filter(function (d) {
+      return d.pos === origData.pos && d.neg === origData.neg && d.roman !== origData.roman;
+    });
+    var mustInclude = sameMetalSameAnion.map(function (d) {
+      return formulaChoiceData.find(function (f) {
+        return f.formula === d.formula;
+      });
+    }).filter(Boolean);
+    var chosen = shuffle(mustInclude).slice(0, 1);
+    var others = shuffle(formulaChoiceData.filter(function (x) {
+      return x.formula !== data.formula && !chosen.find(function (c) {
+        return c.formula === x.formula;
+      });
+    })).slice(0, 3 - chosen.length);
+    distractors = [].concat(_toConsumableArray(chosen), _toConsumableArray(others));
+  } else {
+    distractors = shuffle(formulaChoiceData.filter(function (x) {
+      return x.formula !== data.formula;
+    })).slice(0, 3);
+  }
+  var options = shuffle([data].concat(_toConsumableArray(distractors)));
+  return {
+    subtype: "formula_choice",
+    name: data.name,
+    answer: data.formula,
+    options: options
+  };
+}
+function renderFormulaChoiceQuestion(q) {
+  dom.questionBody.innerHTML = "";
+  dom.optionsArea.innerHTML = "";
+  dom.btnWrap.style.display = "flex";
+  dom.btnCheck.style.display = "none";
+  dom.typeHint.innerText = "化學式選擇題";
+  var desc = document.createElement("div");
+  desc.className = "judge-desc";
+  desc.innerText = "以下化合物的化學式是？";
+  dom.questionBody.appendChild(desc);
+  var nameBox = document.createElement("div");
+  nameBox.className = "compound-formula";
+  nameBox.textContent = q.name;
+  dom.questionBody.appendChild(nameBox);
+  var opts = document.createElement("div");
+  opts.className = "formula-options";
+  q.options.forEach(function (o) {
+    var d = document.createElement("div");
+    d.className = "formula-option";
+    d.innerText = o.formula;
+    d.onclick = function () {
+      return checkFormulaChoiceAnswer(o.formula);
+    };
+    opts.appendChild(d);
+  });
+  dom.optionsArea.appendChild(opts);
+}
+function checkFormulaChoiceAnswer(userAns) {
+  var q = state.currentQuestion;
+  state.total++;
+  state.sessionTotal++;
+  var ok = userAns === q.answer;
+  if (ok) {
+    state.correct++;
+    state.sessionCorrect++;
+    showFeedback("回答正確！", true);
+  } else showFeedback("\u56DE\u7B54\u932F\u8AA4\uFF0C\u6B63\u78BA\uFF1A".concat(q.answer), false);
+  if (!ok) {
+    try {
+      var _wi4 = {
+        type: '化學式選擇',
+        question: '化合物 ' + q.name + ' 的化學式是？',
+        userAnswer: userAns,
+        correctAnswer: q.answer,
+        explanation: q.name + ' 的化學式是 ' + q.answer
+      };
+      WrongBook.add(_wi4);
+    } catch(e) {}
+  }
+  updateScore();
+  afterAnswer(ok);
+}
+function generateQuestionSet() {
+  var set = [];
+  var usedKeys = new Set();
+  function qKey(q) {
+    if (q.questionType === "fill") return "fill_" + q.fillType + "_" + q.symbol;
+    if (q.subtype === "shell_config") return "shell_" + q.displaySymbol + "_" + q.isCorrect;
+    if (q.subtype === "compound_name") return "cname_" + q.formula;
+    if (q.subtype === "formula_choice") return "fchoice_" + q.name;
+    if (q.subtype === "atom" || q.subtype === "atom_full") return q.subtype + "_" + q.data.symbol + "_" + q.isCorrect;
+    if (q.subtype === "ion") return "ion_" + q.data.name + "_" + q.isCorrect;
+    if (q.subtype === "compound") return "compound_" + q.data.name + "_" + q.isCorrect;
+    if (q.subtype === "covalent") return "covalent_" + q.data.name + "_" + q.isCorrect;
+    return q.subtype + "_" + q.data.name;
+  }
+  function qMaterial(q) {
+    if (q.questionType === "fill") return q.symbol;
+    if (q.subtype === "shell_config") return q.displaySymbol;
+    if (q.subtype === "compound_name") return q.formula;
+    if (q.subtype === "formula_choice") return q.name;
+    if (q.subtype === "atom" || q.subtype === "atom_full") return q.data.symbol;
+    return q.data.name;
+  }
+  function tryAdd(q) {
+    var k = qKey(q);
+    if (usedKeys.has(k)) return false;
+    usedKeys.add(k);
+    set.push(q);
+    return true;
+  }
+  function genBatch(n, genFn) {
+    var c = 0;
+    var guard = 0;
+    while (c < n && guard < 500) {
+      guard++;
+      if (genFn()) c++;
+    }
+  }
+  // 5题填空
+  genBatch(5, function () {
+    var el = elementList[Math.floor(Math.random() * elementList.length)];
+    return tryAdd(_objectSpread({
+      questionType: "fill",
+      fillType: Math.random() > 0.5 ? "fill_symbol" : "fill_name"
+    }, el));
+  });
+  // 5题原子/离子电子图正误
+  genBatch(5, function () {
+    var st = ["atom", "atom_full", "ion"][Math.floor(Math.random() * 3)];
+    return tryAdd(generateJudgeQuestion(st));
+  });
+  // 5题分子/化合物电子图正误
+  genBatch(5, function () {
+    var st = ["compound", "covalent"][Math.floor(Math.random() * 2)];
+    return tryAdd(generateJudgeQuestion(st));
+  });
+  // 5题离子/共价判断
+  genBatch(5, function () {
+    var st = ["type", "type_name", "type_formula"][Math.floor(Math.random() * 3)];
+    return tryAdd(generateJudgeQuestion(st));
+  });
+  // 3题电子排布判断
+  genBatch(3, function () {
+    return tryAdd(generateShellConfigQuestion());
+  });
+  // 3题化合物名称填空
+  genBatch(3, function () {
+    return tryAdd(generateCompoundNameQuestion());
+  });
+  // 4题化学式选择
+  genBatch(4, function () {
+    return tryAdd(generateFormulaChoiceQuestion());
+  });
+  // 同一物质多次出现时至少一题正确
+  var matMap = {};
+  set.forEach(function (q, i) {
+    var m = qMaterial(q);
+    if (!matMap[m]) matMap[m] = [];
+    matMap[m].push(i);
+  });
+  for (var m in matMap) {
+    var idxs = matMap[m];
+    if (idxs.length < 2) continue;
+    var hasCorrect = idxs.some(function (i) {
+      var q = set[i];
+      if (q.questionType === "fill") return true;
+      if (q.subtype === "type" || q.subtype === "type_name" || q.subtype === "type_formula") return true;
+      return q.isCorrect === true;
+    });
+    if (!hasCorrect) {
+      var idx = idxs[0];
+      var oldQ = set[idx];
+      var newQ = generateJudgeQuestion(oldQ.subtype, true);
+      usedKeys.delete(qKey(oldQ));
+      usedKeys.add(qKey(newQ));
+      set[idx] = newQ;
+    }
+  }
+  return shuffle(set);
+}
+function renderJudgeQuestion(q) {
+  dom.questionBody.innerHTML = "";
+  dom.optionsArea.innerHTML = "";
+  dom.btnWrap.style.display = "flex";
+  dom.btnCheck.style.display = "none";
+  var isTypeQ = q.subtype === "type" || q.subtype === "type_name" || q.subtype === "type_formula";
+  dom.typeHint.innerText = isTypeQ ? "化合物類型判斷題" : "電子圖判斷題";
+  var desc = document.createElement("div");
+  desc.className = "judge-desc";
+  desc.innerText = q.desc;
+  dom.questionBody.appendChild(desc);
+  dom.questionBody.appendChild(q.diagram);
+  var opts = document.createElement("div");
+  opts.className = "judge-options";
+  if (isTypeQ) {
+    var b1 = document.createElement("div");
+    b1.className = "judge-btn neutral";
+    b1.innerText = "離子化合物";
+    b1.onclick = function () {
+      return checkJudgeAnswer("ionic");
+    };
+    var b2 = document.createElement("div");
+    b2.className = "judge-btn neutral";
+    b2.innerText = "共價化合物";
+    b2.onclick = function () {
+      return checkJudgeAnswer("covalent");
+    };
+    opts.appendChild(b1);
+    opts.appendChild(b2);
+  } else {
+    var btnCorrect = document.createElement("div");
+    btnCorrect.className = "judge-btn correct";
+    btnCorrect.innerText = "正確";
+    btnCorrect.onclick = function () {
+      return checkJudgeAnswer(true);
+    };
+    var btnWrong = document.createElement("div");
+    btnWrong.className = "judge-btn wrong";
+    btnWrong.innerText = "錯誤";
+    btnWrong.onclick = function () {
+      return checkJudgeAnswer(false);
+    };
+    opts.appendChild(btnCorrect);
+    opts.appendChild(btnWrong);
+  }
+  dom.optionsArea.appendChild(opts);
+}
+function checkJudgeAnswer(userAns) {
+  var q = state.currentQuestion;
+  var isTypeQ = q.subtype === "type" || q.subtype === "type_name" || q.subtype === "type_formula";
+  var ok = isTypeQ ? userAns === q.typeAnswer : userAns === q.isCorrect;
+  state.total++;
+  state.sessionTotal++;
+  if (ok) {
+    state.correct++;
+    state.sessionCorrect++;
+    showFeedback("回答正確！", true);
+  } else {
+    var msg;
+    if (isTypeQ) {
+      msg = "\u6B63\u78BA\u7B54\u6848\u662F".concat(q.typeAnswer === "ionic" ? "離子化合物" : "共價化合物", "\u3002").concat(q.typeAnswer === "ionic" ? "離子化合物由金屬與非金屬組成，原子間通過電子轉移形成離子鍵；共價化合物由非金屬元素組成，原子間通過共用電子對形成共價鍵。" : "");
+    } else if (q.subtype === "shell_config") {
+      msg = q.isCorrect ? "該電子排佈是正確的。" : "\u8A72\u96FB\u5B50\u6392\u4F48\u662F\u932F\u8AA4\u7684\u3002".concat(q.errorReason);
+    } else {
+      msg = q.isCorrect ? "該電子圖是正確的。" : "\u8A72\u96FB\u5B50\u5716\u662F\u932F\u8AA4\u7684\u3002".concat(q.errorReason);
+    }
+    showFeedback("\u56DE\u7B54\u932F\u8AA4\u3002".concat(msg), false);
+  }
+  if (!ok) {
+    try {
+      var _wi = {
+        type: isTypeQ ? '化合物類型判斷' : (q.subtype === 'shell_config' ? '電子排佈判斷' : '電子圖判斷'),
+        question: q.desc || '',
+        userAnswer: isTypeQ ? (userAns === 'ionic' ? '離子化合物' : '共價化合物') : (userAns ? '正確' : '錯誤'),
+        correctAnswer: isTypeQ ? (q.typeAnswer === 'ionic' ? '離子化合物' : '共價化合物') : (q.isCorrect ? '正確' : '錯誤'),
+        explanation: msg || ''
+      };
+      WrongBook.add(_wi);
+    } catch(e) {}
+  }
+  updateScore();
+  afterAnswer(ok);
+}
+
+/* ===== 通用 ===== */
+function generateQuestion() {
+  clearFeedback();
+  resumeTimer();
+  enableOptions();
+  dom.btnCheck.style.display = "inline-block";
+  dom.btnCheck.disabled = false;
+  dom.btnNext.style.display = "none";
+  if (state.questionIndex >= state.questionSet.length) {
+    state.questionSet = generateQuestionSet();
+    state.questionIndex = 0;
+  }
+  var q = state.questionSet[state.questionIndex++];
+  state.currentQuestion = q;
+  if (q.questionType === "fill") {
+    state.questionType = q.fillType;
+    renderFillSlots();
+    renderFillOptions();
+  } else if (q.subtype === "shell_config") {
+    state.questionType = "judge";
+    renderShellConfigQuestion(q);
+  } else if (q.subtype === "compound_name") {
+    state.questionType = "compound_name";
+    renderCompoundNameQuestion(q);
+  } else if (q.subtype === "formula_choice") {
+    state.questionType = "judge";
+    renderFormulaChoiceQuestion(q);
+  } else {
+    state.questionType = "judge";
+    renderJudgeQuestion(q);
+  }
+}
+function checkFillAnswer() {
+  dom.btnCheck.disabled = true;
+  var q = state.currentQuestion;
+  state.total++;
+  state.sessionTotal++;
+  var rc = 0;
+  var _iterator = _createForOfIteratorHelper(state.slots),
+    _step;
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var s = _step.value;
+      var ua = state.answerFilled[s.slotId];
+      var ca = void 0;
+      if (s.slotId === "z") ca = q.z;
+      if (s.slotId === "symbol") ca = q.symbol;
+      if (s.slotId === "name") ca = q.name;
+      if (String(ua) === String(ca)) rc++;
+    }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
+  }
+  var ok = rc === state.slots.length;
+  if (ok) {
+    state.correct++;
+    state.sessionCorrect++;
+    showFeedback("回答正確！", true);
+  } else showFeedback("\u56DE\u7B54\u932F\u8AA4\uFF0C\u6B63\u78BA\uFF1A".concat(q.name, " / ").concat(q.symbol, " / \u539F\u5B50\u5E8F").concat(q.z), false);
+  if (!ok) {
+    try {
+      var _uaStr = Object.keys(state.answerFilled).map(function(k) { return k + '=' + state.answerFilled[k]; }).join(', ');
+      var _wi2 = {
+        type: '元素填空',
+        question: (state.questionType === 'fill_symbol' ? '給出原子符號 ' + q.symbol + '，填寫原子序與元素名稱' : '給出元素名稱 ' + q.name + '，填寫原子符號與原子序'),
+        userAnswer: _uaStr,
+        correctAnswer: q.name + ' / ' + q.symbol + ' / 原子序' + q.z,
+        explanation: '原子序' + q.z + '，符號' + q.symbol + '，名稱' + q.name
+      };
+      WrongBook.add(_wi2);
+    } catch(e) {}
+  }
+  updateScore();
+  afterAnswer(ok);
+}
+function afterAnswer(isCorrect) {
+  disableOptions();
+  if (state.sessionTotal >= 30) {
+    if (isCorrect) setTimeout(openResultModal, 1000);else showNextBtn(true);
+  } else {
+    if (isCorrect) setTimeout(generateQuestion, 1500);else showNextBtn(false);
+  }
+}
+function showNextBtn(isLast) {
+  dom.btnCheck.style.display = "none";
+  dom.btnNext.style.display = "inline-block";
+  dom.btnNext.onclick = function () {
+    dom.btnNext.style.display = "none";
+    if (isLast) openResultModal();else generateQuestion();
+  };
+}
+function openResultModal() {
+  stopTimer();
+  var elapsed = getSessionTime();
+  var t = state.sessionTotal,
+    r = state.sessionCorrect,
+    rate = t === 0 ? 0 : Math.round(r / t * 100);
+  dom.modalTotal.innerText = t;
+  dom.modalRight.innerText = r;
+  dom.modalRate.innerText = rate + "%";
+  dom.modalTime.innerText = formatTime(elapsed);
+  dom.modalProgress.style.width = rate + "%";
+  dom.modalTip.innerText = rate >= 90 ? "掌握非常紮實！" : rate >= 70 ? "表現不錯，繼續鞏固" : rate >= 50 ? "還需多加練習" : "建議多複習前20號元素";
+  dom.resultModal.classList.add("show");
+  
+  /* 一轮完成后自动同步错题到 GitHub */
+  if (AUTO_SYNC_AFTER_ROUND && GITHUB_CONFIG && GITHUB_CONFIG.username && GITHUB_CONFIG.repo && GITHUB_CONFIG.token) {
+    var wrongCount = WrongBook.getAll().length;
+    if (wrongCount > 0) {
+      setTimeout(function() {
+        GitHubSync.syncWrongQuestions().then(function(result) {
+          if (result.success) {
+            WrongBook.setLastSync(new Date().toISOString());
+            console.log('一轮完成，错题已自动同步到 GitHub');
+          } else {
+            console.warn('自动同步失败:', result.error);
+          }
+        });
+      }, 1500);
+    }
+  }
+}
+function closeResultModal() {
+  dom.resultModal.classList.remove("show");
+  state.sessionTotal = 0;
+  state.sessionCorrect = 0;
+  updateScore();
+  state.questionSet = generateQuestionSet();
+  state.questionIndex = 0;
+  startTimer();
+  generateQuestion();
+}
+function saveResultScreenshot() {
+  var t = state.sessionTotal,
+    r = state.sessionCorrect,
+    rate = t === 0 ? 0 : Math.round(r / t * 100);
+  var c = document.createElement("canvas");
+  c.width = 800;
+  c.height = 1000;
+  var x = c.getContext("2d");
+  x.fillStyle = "#0f172a";
+  x.fillRect(0, 0, 800, 1000);
+  x.fillStyle = "#fff";
+  x.font = "bold 36px sans-serif";
+  x.textAlign = "center";
+  x.fillText("恭喜完成本輪練習", 400, 180);
+  x.font = "24px sans-serif";
+  x.fillText("答題總數：" + t, 400, 280);
+  x.fillText("答對題目：" + r, 400, 330);
+  x.fillText("正確率：" + rate + "%", 400, 380);
+  x.fillText("用時：" + formatTime(getSessionTime()), 400, 430);
+  x.fillStyle = "#38bdf8";
+  x.font = "18px sans-serif";
+  x.fillText("DSE化學 元素记忆練習", 400, 480);
+  var d = new Date().toLocaleDateString();
+  x.fillStyle = "#94a3b8";
+  x.fillText(d, 400, 530);
+  var a = document.createElement("a");
+  a.download = "DSE元素練習_結算_" + d.replace(/\//g, "-") + ".png";
+  a.href = c.toDataURL("image/png");
+  a.click();
+}
+try {
+  if (dom.btnCheck) dom.btnCheck.onclick = function () {
+    if (state.questionType === "compound_name") checkCompoundNameAnswer();else checkFillAnswer();
+  };
+  if (dom.btnSaveScreenshot) dom.btnSaveScreenshot.onclick = saveResultScreenshot;
+  if (dom.btnContinueQuiz) dom.btnContinueQuiz.onclick = closeResultModal;
+} catch (e) {
+  console.error("事件绑定异常:", e);
+}
+
+/* ===== 安全启动（iOS微信WKWebView适配） ===== */
+var initAttempts = 0;
+function safeInit() {
+  initAttempts++;
+  try {
+    if (!dom.questionBody || !dom.optionsArea) {
+      if (initAttempts < 10) {
+        setTimeout(safeInit, 100);
+      }
+      return;
+    }
+    if (state.questionSet.length === 0) {
+      state.questionSet = generateQuestionSet();
+      state.questionIndex = 0;
+    }
+    startTimer();
+    generateQuestion();
+  } catch (e) {
+    console.error("初始化异常:", e);
+    if (initAttempts < 5) {
+      setTimeout(safeInit, 300);
+    } else {
+      showFallback();
+    }
+  }
+}
+function showFallback() {
+  dom.questionBody.innerHTML = "";
+  var tip = document.createElement("div");
+  tip.style.cssText = "text-align:center;padding:30px 10px;color:#94a3b8;font-size:15px;line-height:1.8";
+  tip.innerHTML = "加載異常，請點擊下方按鈕重新開始";
+  dom.questionBody.appendChild(tip);
+  dom.optionsArea.innerHTML = "";
+  var btn = document.createElement("div");
+  btn.className = "judge-btn neutral";
+  btn.innerText = "重新開始";
+  btn.style.maxWidth = "200px";
+  btn.style.margin = "0 auto";
+  btn.onclick = function () {
+    state.questionSet = [];
+    state.questionIndex = 0;
+    initAttempts = 0;
+    safeInit();
+  };
+  dom.optionsArea.appendChild(btn);
+  dom.btnWrap.style.display = "none";
+}
+function startApp() {
+  if (document.readyState === "complete" || document.readyState === "interactive") {
+    setTimeout(safeInit, 50);
+  } else {
+    document.addEventListener("DOMContentLoaded", function () {
+      setTimeout(safeInit, 50);
+    });
+  }
+}
+window.addEventListener("load", function () {
+  if (state.questionSet.length === 0) {
+    setTimeout(safeInit, 100);
+  }
+});
+startApp();
+
+/* ===== 错题管理模块 ===== */
+var WrongBook = {
+  STORAGE_KEY: 'dse_wrong_questions',
+  CONFIG_KEY: 'dse_github_config',
+  SYNC_KEY: 'dse_last_sync',
+  
+  getAll: function() {
+    try {
+      var data = localStorage.getItem(this.STORAGE_KEY);
+      return data ? JSON.parse(data) : [];
+    } catch(e) { return []; }
+  },
+  
+  saveAll: function(list) {
+    try { localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list)); } catch(e) {}
+  },
+  
+  add: function(item) {
+    var list = this.getAll();
+    item.id = Date.now() + '_' + Math.floor(Math.random() * 10000);
+    item.wrongTime = new Date().toISOString();
+    list.unshift(item);
+    this.saveAll(list);
+    this.updateBadge();
+    this.autoSync();
+    return item;
+  },
+  
+  remove: function(id) {
+    var list = this.getAll().filter(function(q) { return q.id !== id; });
+    this.saveAll(list);
+    this.updateBadge();
+  },
+  
+  clear: function() {
+    this.saveAll([]);
+    this.updateBadge();
+  },
+  
+  updateBadge: function() {
+    var badge = document.getElementById('wrongBadge');
+    if (!badge) return;
+    var count = this.getAll().length;
+    if (count > 0) {
+      badge.style.display = 'flex';
+      badge.textContent = count > 99 ? '99+' : count;
+    } else {
+      badge.style.display = 'none';
+    }
+  },
+  
+  getConfig: function() {
+    try {
+      var data = localStorage.getItem(this.CONFIG_KEY);
+      return data ? JSON.parse(data) : null;
+    } catch(e) { return null; }
+  },
+  
+  saveConfig: function(cfg) {
+    try { localStorage.setItem(this.CONFIG_KEY, JSON.stringify(cfg)); } catch(e) {}
+  },
+  
+  getLastSync: function() {
+    return localStorage.getItem(this.SYNC_KEY) || '';
+  },
+  
+  setLastSync: function(time) {
+    localStorage.setItem(this.SYNC_KEY, time);
+  },
+  
+  autoSync: function() {
+    var cfg = this.getConfig();
+    if (!cfg || !cfg.token) return;
+    if (this._syncTimer) clearTimeout(this._syncTimer);
+    this._syncTimer = setTimeout(function() {
+      GitHubSync.syncWrongQuestions();
+    }, 3000);
+  }
+};
+
+/* ===== GitHub 同步模块 ===== */
+var GitHubSync = {
+  apiBase: 'https://api.github.com',
+  filePath: GITHUB_SYNC_FILE,
+  
+  buildHeaders: function(token) {
+    return {
+      'Authorization': 'token ' + token,
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json'
+    };
+  },
+  
+  testConnection: function(user, repo, token) {
+    var url = this.apiBase + '/repos/' + user + '/' + repo;
+    return fetch(url, { headers: this.buildHeaders(token) })
+      .then(function(res) {
+        if (res.ok) return { success: true };
+        return { success: false, error: 'HTTP ' + res.status };
+      })
+      .catch(function(err) { return { success: false, error: err.message }; });
+  },
+  
+  getFile: function(user, repo, token, path) {
+    var url = this.apiBase + '/repos/' + user + '/' + repo + '/contents/' + path;
+    return fetch(url, { headers: this.buildHeaders(token) })
+      .then(function(res) {
+        if (res.status === 404) return { exists: false };
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json().then(function(data) {
+          var content = '';
+          if (data.content) {
+            content = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+          }
+          return { exists: true, sha: data.sha, content: content };
+        });
+      });
+  },
+  
+  putFile: function(user, repo, token, path, content, sha, message) {
+    var url = this.apiBase + '/repos/' + user + '/' + repo + '/contents/' + path;
+    var body = {
+      message: message || 'Update wrong questions',
+      content: btoa(unescape(encodeURIComponent(content))),
+      branch: 'main'
+    };
+    if (sha) body.sha = sha;
+    return fetch(url, {
+      method: 'PUT',
+      headers: this.buildHeaders(token),
+      body: JSON.stringify(body)
+    }).then(function(res) {
+      if (res.ok) return { success: true };
+      return res.json().then(function(d) {
+        return { success: false, error: d.message || ('HTTP ' + res.status) };
+      });
+    });
+  },
+  
+  syncWrongQuestions: function() {
+    var self = this;
+    var cfg = GITHUB_CONFIG;
+    if (!cfg || !cfg.username || !cfg.repo || !cfg.token) {
+      return Promise.resolve({ success: false, error: '未配置 GitHub（请在代码中填写 GITHUB_CONFIG）' });
+    }
+    var wrongList = WrongBook.getAll();
+    var exportData = {
+      lastUpdated: new Date().toISOString(),
+      totalCount: wrongList.length,
+      questions: wrongList
+    };
+    var content = JSON.stringify(exportData, null, 2);
+    
+    return this.getFile(cfg.username, cfg.repo, cfg.token, this.filePath)
+      .then(function(fileInfo) {
+        return self.putFile(
+          cfg.username, cfg.repo, cfg.token, self.filePath,
+          content, fileInfo.exists ? fileInfo.sha : null,
+          '更新错题记录 - ' + new Date().toLocaleString()
+        );
+      })
+      .then(function(result) {
+        if (result.success) {
+          WrongBook.setLastSync(new Date().toISOString());
+        }
+        return result;
+      })
+      .catch(function(err) {
+        return { success: false, error: err.message };
+      });
+  }
+};
+
+/* ===== 设置面板逻辑 ===== */
+var SettingsPanel = {
+  init: function() {
+    var self = this;
+    document.getElementById('btnSettings').onclick = function() { self.open(); };
+    document.getElementById('btnCloseSettings').onclick = function() { self.close(); };
+    document.getElementById('btnSyncNow').onclick = function() { self.syncNow(); };
+    document.getElementById('btnClearWrong').onclick = function() { self.clearWrong(); };
+    
+    document.getElementById('settingsPanel').onclick = function(e) {
+      if (e.target === this) self.close();
+    };
+  },
+  
+  open: function() {
+    this.updateStatus();
+    this.updateConfigDisplay();
+    document.getElementById('settingsPanel').classList.add('show');
+  },
+  
+  close: function() {
+    document.getElementById('settingsPanel').classList.remove('show');
+  },
+  
+  updateConfigDisplay: function() {
+    var cfg = GITHUB_CONFIG;
+    var display = document.getElementById('configDisplay');
+    if (display) {
+      if (cfg.username && cfg.repo && cfg.token) {
+        display.innerHTML = '<div class="config-row"><span class="config-label">仓库：</span><span class="config-value">' + cfg.username + '/' + cfg.repo + '</span></div>' +
+          '<div class="config-row"><span class="config-label">文件：</span><span class="config-value">' + GITHUB_SYNC_FILE + '</span></div>' +
+          '<div class="config-row"><span class="config-label">Token：</span><span class="config-value">' + cfg.token.substring(0, 8) + '...' + cfg.token.substring(cfg.token.length - 4) + '</span></div>';
+      } else {
+        display.innerHTML = '<div style="color:#f87171;font-size:13px;">⚠️ 尚未在代码中配置 GITHUB_CONFIG，请在 HTML 文件顶部填写 username、repo 和 token</div>';
+      }
+    }
+  },
+  
+  updateStatus: function(msg, type) {
+    var el = document.getElementById('syncStatus');
+    if (msg) {
+      el.className = 'sync-status ' + (type || 'info');
+      el.textContent = msg;
+    } else {
+      var cfg = GITHUB_CONFIG;
+      var lastSync = WrongBook.getLastSync();
+      if (cfg && cfg.username && cfg.repo && cfg.token) {
+        var text = '✅ 已配置：' + cfg.username + '/' + cfg.repo;
+        if (lastSync) text += ' | 上次同步：' + new Date(lastSync).toLocaleString();
+        el.className = 'sync-status success';
+        el.textContent = text;
+      } else {
+        el.className = 'sync-status error';
+        el.textContent = '❌ 未配置：请在代码中填写 GITHUB_CONFIG';
+      }
+    }
+  },
+  
+  syncNow: function() {
+    var self = this;
+    var cfg = GITHUB_CONFIG;
+    if (!cfg || !cfg.username || !cfg.repo || !cfg.token) {
+      this.updateStatus('请先在代码中配置 GITHUB_CONFIG', 'error');
+      return;
+    }
+    this.updateStatus('正在同步到 GitHub...', 'info');
+    GitHubSync.syncWrongQuestions().then(function(result) {
+      if (result.success) {
+        WrongBook.setLastSync(new Date().toISOString());
+        self.updateStatus('✅ 同步成功！错题已更新到 GitHub 仓库的 ' + GitHubSync.filePath, 'success');
+      } else {
+        self.updateStatus('❌ 同步失败：' + result.error, 'error');
+      }
+    });
+  },
+  
+  clearWrong: function() {
+    if (confirm('确定要清空所有本地错题记录吗？GitHub上的文件不会被删除。')) {
+      WrongBook.clear();
+      WrongBookPanel.render();
+      this.updateStatus('已清空本地错题记录', 'info');
+    }
+  }
+};
+
+/* ===== 错题本面板逻辑 ===== */
+var WrongBookPanel = {
+  currentFilter: 'all',
+  
+  init: function() {
+    var self = this;
+    document.getElementById('btnWrongBook').onclick = function() { self.open(); };
+    document.getElementById('btnCloseWrongBook').onclick = function() { self.close(); };
+    document.getElementById('wrongBookPanel').onclick = function(e) {
+      if (e.target === this) self.close();
+    };
+  },
+  
+  open: function() {
+    this.render();
+    document.getElementById('wrongBookPanel').classList.add('show');
+  },
+  
+  close: function() {
+    document.getElementById('wrongBookPanel').classList.remove('show');
+  },
+  
+  getTypes: function() {
+    var list = WrongBook.getAll();
+    var types = {};
+    list.forEach(function(q) { types[q.type] = true; });
+    return Object.keys(types);
+  },
+  
+  renderFilterBar: function() {
+    var self = this;
+    var bar = document.getElementById('wrongFilterBar');
+    var types = this.getTypes();
+    var html = '<button class="filter-btn ' + (this.currentFilter === 'all' ? 'active' : '') + '" data-type="all">全部 (' + WrongBook.getAll().length + ')</button>';
+    types.forEach(function(t) {
+      var count = WrongBook.getAll().filter(function(q) { return q.type === t; }).length;
+      html += '<button class="filter-btn ' + (self.currentFilter === t ? 'active' : '') + '" data-type="' + t + '">' + t + ' (' + count + ')</button>';
+    });
+    bar.innerHTML = html;
+    var btns = bar.querySelectorAll('.filter-btn');
+    btns.forEach(function(btn) {
+      btn.onclick = function() {
+        self.currentFilter = this.dataset.type;
+        self.render();
+      };
+    });
+  },
+  
+  render: function() {
+    var self = this;
+    this.renderFilterBar();
+    var list = WrongBook.getAll();
+    if (this.currentFilter !== 'all') {
+      list = list.filter(function(q) { return q.type === self.currentFilter; });
+    }
+    var container = document.getElementById('wrongList');
+    
+    if (list.length === 0) {
+      container.innerHTML = '<div class="empty-state">🎉 暫無錯題，繼續加油！</div>';
+      return;
+    }
+    
+    var html = '';
+    list.forEach(function(q) {
+      html += '<div class="wrong-item">';
+      html += '<div class="wrong-item-header">';
+      html += '<span class="wrong-type">' + (q.type || '未知') + '</span>';
+      html += '<span class="wrong-time">' + new Date(q.wrongTime).toLocaleString() + '</span>';
+      html += '</div>';
+      html += '<div class="wrong-question">' + (q.question || '').replace(/</g, '&lt;') + '</div>';
+      if (q.userAnswer !== undefined) {
+        html += '<div class="wrong-answer-row"><span class="wrong-answer-label">你的答案：</span><span class="wrong-answer-user">' + String(q.userAnswer).replace(/</g, '&lt;') + '</span></div>';
+      }
+      if (q.correctAnswer !== undefined) {
+        html += '<div class="wrong-answer-row"><span class="wrong-answer-label">正確答案：</span><span class="wrong-answer-correct">' + String(q.correctAnswer).replace(/</g, '&lt;') + '</span></div>';
+      }
+      if (q.explanation) {
+        html += '<div class="wrong-explanation">💡 ' + q.explanation.replace(/</g, '&lt;') + '</div>';
+      }
+      html += '<div class="wrong-item-actions">';
+      html += '<button class="wrong-item-btn danger" data-id="' + q.id + '">移除</button>';
+      html += '</div></div>';
+    });
+    container.innerHTML = html;
+    
+    var removeBtns = container.querySelectorAll('.wrong-item-btn.danger');
+    removeBtns.forEach(function(btn) {
+      btn.onclick = function() {
+        if (confirm('确定移除这道错题吗？')) {
+          WrongBook.remove(this.dataset.id);
+          self.render();
+        }
+      };
+    });
+  }
+};
+
+/* ===== 初始化面板（等待DOM加载完成） ===== */
+function initPanels() {
+  try {
+    SettingsPanel.init();
+    WrongBookPanel.init();
+    WrongBook.updateBadge();
+  } catch(e) {
+    console.error('面板初始化失败:', e);
+    var _errDiv = document.createElement('div');
+    _errDiv.style.cssText = 'position:fixed;top:10px;left:10px;right:10px;background:#f87171;color:#fff;padding:10px;border-radius:8px;font-size:12px;z-index:99999;word-break:break-all';
+    _errDiv.textContent = '面板初始化失败: ' + e.message;
+    document.body.appendChild(_errDiv);
+  }
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initPanels);
+} else {
+  initPanels();
+}
+</script>
+<!-- 设置面板 -->
+<div class="panel-overlay" id="settingsPanel">
+<div class="panel-box">
+<div class="panel-header"><span class="panel-title">⚙️ 設置</span><button class="panel-close" id="btnCloseSettings">✕</button></div>
+<div class="panel-body">
+<div class="sync-status info" id="syncStatus">尚未配置 GitHub 同步</div>
+<div class="setting-group">
+<label class="setting-label">當前配置</label>
+<div id="configDisplay" style="background:rgba(0,0,0,0.2);border-radius:8px;padding:12px;font-size:13px;line-height:1.8;"></div>
+<div class="setting-hint">配置方式：用文本編輯器打開 HTML 文件，在頂部找到 GITHUB_CONFIG，填寫 username、repo、token 後保存即可。Token 獲取：GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token，勾選 repo 權限。</div>
+</div>
+<button class="setting-btn secondary" id="btnSyncNow">立即同步錯題到 GitHub</button>
+<button class="setting-btn danger" id="btnClearWrong">清空本地錯題記錄</button>
+</div>
+</div>
+</div>
+
+<!-- 错题本面板 -->
+<div class="panel-overlay" id="wrongBookPanel">
+<div class="panel-box">
+<div class="panel-header"><span class="panel-title">📋 錯題本</span><button class="panel-close" id="btnCloseWrongBook">✕</button></div>
+<div class="panel-body">
+<div class="filter-bar" id="wrongFilterBar"></div>
+<div id="wrongList"></div>
+</div>
+</div>
+</div>
+</body>
+</html>
